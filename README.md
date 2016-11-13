@@ -11,4 +11,4 @@ This is the shared repository for the project developed in this course. Go to th
 
 ## Teams
 
-To be completed.
+* [Grupo 6:](https://github.com/aguiu/UrlShortener/tree/master/team) Alejandro Guiu Pérez, Álvaro Juan Ciriaco, Eduardo Aguilar Requena | [![Build Status](https://travis-ci.org/aguiu/UrlShortener.svg?branch=master)](https://travis-ci.org/aguiu/UrlShortener)
