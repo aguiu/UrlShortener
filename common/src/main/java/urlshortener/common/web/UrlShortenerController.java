@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.UUID;
@@ -73,22 +76,31 @@ public class UrlShortenerController {
 	public ResponseEntity<ShortURL> shortener(@RequestParam("url") String url,
 											  @RequestParam(value = "sponsor", required = false) String sponsor,
 											  HttpServletRequest request) {
-		ShortURL su = createAndSaveIfValid(url, sponsor, UUID
-				.randomUUID().toString(), extractIP(request));
-		if (su != null) {
-			HttpHeaders h = new HttpHeaders();
-			h.setLocation(su.getUri());
-			return new ResponseEntity<>(su, h, HttpStatus.CREATED);
-		} else {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		UrlValidator urlValidator = new UrlValidator(new String[] { "http",
+		"https" });
+		if (urlValidator.isValid(url)) {
+			if(isOnline(url)){
+				ShortURL su = createAndSaveIfValid(url, sponsor, UUID
+						.randomUUID().toString(), extractIP(request));
+				if (su != null) {
+					HttpHeaders h = new HttpHeaders();
+					h.setLocation(su.getUri());
+					return new ResponseEntity<>(su, h, HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+				}
+			} else{
+				LOG.error("url no alcanzable");
+				return new ResponseEntity <> (HttpStatus.SERVICE_UNAVAILABLE);
+			}
+		} else{
+			LOG.error("url no valida");
+			return new ResponseEntity <> (HttpStatus.BAD_REQUEST);
 		}
 	}
 
 	private ShortURL createAndSaveIfValid(String url, String sponsor,
 										  String owner, String ip) {
-		UrlValidator urlValidator = new UrlValidator(new String[] { "http",
-				"https" });
-		if (urlValidator.isValid(url)) {
 			String id = Hashing.murmur3_32()
 					.hashString(url, StandardCharsets.UTF_8).toString();
 			ShortURL su = new ShortURL(id, url,
@@ -98,8 +110,18 @@ public class UrlShortenerController {
 							System.currentTimeMillis()), owner,
 					HttpStatus.TEMPORARY_REDIRECT.value(), true, ip, null);
 			return shortURLRepository.save(su);
-		} else {
-			return null;
+	}
+	
+	/**
+	 * Cierto si [url] es accesible
+	 */
+	private boolean isOnline(String url){
+		try{
+			HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
+			c.setRequestMethod("HEAD");
+			return c.getResponseCode() == 200;
+		} catch (IOException e){
+			return false;
 		}
 	}
 }
