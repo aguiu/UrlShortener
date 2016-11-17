@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +30,7 @@ import urlshortener.common.domain.ShortURL;
 import urlshortener.common.repository.ClickRepository;
 import urlshortener.common.repository.ShortURLRepository;
 import urlshortener.common.domain.Click;
+import urlshortener.common.domain.Statistic;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -122,6 +124,32 @@ public class UrlShortenerController {
 			return c.getResponseCode() == 200;
 		} catch (IOException e){
 			return false;
+		}
+	}
+
+	@RequestMapping(value = "/{id}+", method = RequestMethod.GET)
+	public ResponseEntity<Statistic> showStatistic(String id, HttpServletRequest request) {
+		ShortURL su = shortURLRepository.findByKey(id);
+		Long numberOfRedirect = (long) 0;
+		if (su != null) {
+			HttpHeaders h = new HttpHeaders();
+			try {
+				h.setLocation(new URI("http://http://localhost:8080/" + su.getHash()));
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			numberOfRedirect = clickRepository.clicksByHash(id);
+			LOG.info("Numero de veces que se ha utilizado " + id + " = " + numberOfRedirect);
+			LOG.info("Fecha de creación de " + id + " = " + su.getCreated());
+			LOG.info("URL destino de " + id + " = " + su.getTarget());
+			Statistic statistic = new Statistic(su.getTarget(),su.getCreated(),numberOfRedirect);
+			return new ResponseEntity<>(statistic, h, HttpStatus.OK);
+			//return createSuccessfulRedirectToResponse(l);
+		} else {
+			LOG.info("NO ENCONTRADO");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			//return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 }
