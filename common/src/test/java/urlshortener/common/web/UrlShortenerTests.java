@@ -74,7 +74,7 @@ public class UrlShortenerTests {
 				.andExpect(jsonPath("$.hash", is("f684a3c4")))
 				.andExpect(jsonPath("$.uri", is("http://localhost/f684a3c4")))
 				.andExpect(jsonPath("$.target", is("http://example.com/")))
-				.andExpect(jsonPath("$.sponsor", is(nullValue())));
+				.andExpect(jsonPath("$.sponsor", is(false)));
 	}
 
 	@Test
@@ -83,13 +83,13 @@ public class UrlShortenerTests {
 
 		mockMvc.perform(
 				post("/link").param("url", "http://example.com/").param(
-						"sponsor", "http://sponsor.com/")).andDo(print())
+						"sponsor", "true")).andDo(print())
 				.andExpect(redirectedUrl("http://localhost/f684a3c4"))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.hash", is("f684a3c4")))
 				.andExpect(jsonPath("$.uri", is("http://localhost/f684a3c4")))
 				.andExpect(jsonPath("$.target", is("http://example.com/")))
-				.andExpect(jsonPath("$.sponsor", is("http://sponsor.com/")));
+				.andExpect(jsonPath("$.sponsor", is(true)));
 	}
 
 	@Test
