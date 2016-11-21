@@ -8,7 +8,7 @@ public class ShortURL {
 	private String hash;
 	private String target;
 	private URI uri;
-	private boolean sponsor;
+	private String sponsor;
 	private Date created;
 	private String owner;
 	private Integer mode;
@@ -16,7 +16,7 @@ public class ShortURL {
 	private String ip;
 	private String country;
 
-	public ShortURL(String hash, String target, URI uri, boolean sponsor,
+	public ShortURL(String hash, String target, URI uri, String sponsor,
 			Date created, String owner, Integer mode, Boolean safe, String ip,
 			String country) {
 		this.hash = hash;
@@ -58,7 +58,7 @@ public class ShortURL {
 		return mode;
 	}
 
-	public boolean getSponsor() {
+	public String getSponsor() {
 		return sponsor;
 	}
 

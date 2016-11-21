@@ -49,7 +49,7 @@ public class ShortURLRepositoryTests {
 	public void thatSaveSponsor() {
 		assertNotNull(repository.save(urlSponsor()));
 		assertSame(jdbc.queryForObject("select sponsor from SHORTURL",
-				Boolean.class), urlSponsor().getSponsor());
+				String.class), urlSponsor().getSponsor());
 	}
 
 	@Test
