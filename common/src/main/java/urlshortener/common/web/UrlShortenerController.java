@@ -70,6 +70,10 @@ public class UrlShortenerController {
 
 	private ResponseEntity<?> createSuccessfulRedirectToResponse(ShortURL l) {
 		HttpHeaders h = new HttpHeaders();
+		if(l.getSponsor()!=null){
+			// TODO: Gestionar que ocurre si este enlace debe llevar publicidad
+			LOG.info("Enlace con publicidad: redireccionando a anuncio...");
+		}
 		h.setLocation(URI.create(l.getTarget()));
 		return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 	}
@@ -80,6 +84,7 @@ public class UrlShortenerController {
 											  HttpServletRequest request) {
 		UrlValidator urlValidator = new UrlValidator(new String[] { "http",
 		"https" });
+		LOG.info("sponsor: " + sponsor);
 		if (urlValidator.isValid(url)) {
 			if(isOnline(url)){
 				ShortURL su = createAndSaveIfValid(url, sponsor, UUID
