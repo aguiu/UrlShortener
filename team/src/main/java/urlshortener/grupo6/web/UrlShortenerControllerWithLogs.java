@@ -26,6 +26,7 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 	@RequestMapping(value = "/{id:(?!link|index).*}", method = RequestMethod.GET)
 	public ResponseEntity<?> redirectTo(@PathVariable String id, HttpServletRequest request) {
 		logger.info("Requested redirection with hash " + id);
+		logger.info("primer chuflete");
 		return super.redirectTo(id, request);
 	}
 
@@ -43,4 +44,12 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 		logger.info("Requested statistic for uri with id " + id);
 		return super.showStatistic(id,request);
 	}
+	
+	@Override
+	@RequestMapping(value = "/p/{id:(?!link|publi).*}", method = RequestMethod.GET)
+	public ResponseEntity<?> redirectToPubli(@PathVariable String id, HttpServletRequest request) {
+		logger.info("Requested redirection  to Publi " + id);
+		return super.redirectToPubli(id, request);
+	}
+	
 }
