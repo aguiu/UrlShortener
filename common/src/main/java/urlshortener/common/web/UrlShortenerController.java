@@ -174,15 +174,19 @@ public class UrlShortenerController {
 		}
 	}
 	
-	@RequestMapping(value = "/p/{id:(?!publi).*}", method = RequestMethod.GET)
+	/**@RequestMapping(value = "/p/{id:(?!publi).*}", method = RequestMethod.GET)
 	public ResponseEntity<?> redirectToPubli(@PathVariable String id,
 			HttpServletRequest request) {
 		LOG.info("entrado en redirectToPubli ");
 		ShortURL l = shortURLRepository.findByKey(id);
 		HttpHeaders h = new HttpHeaders();
-		
-		h.setLocation(URI.create(l.getTarget()));
-		return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
+		return new ResponseEntity<>(l ,h, HttpStatus.OK);
+	}**/
+	public String redirectToPubli(@PathVariable String id,
+			HttpServletRequest request) {
+		LOG.info("entrado en redirectToPubli ");
+		ShortURL l = shortURLRepository.findByKey(id);
+		return "/publi.html";
 	}
 
 }

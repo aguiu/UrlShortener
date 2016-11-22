@@ -1,22 +1,18 @@
 $(document).ready(
     function() {
-        $("#shortener").submit(
+        $("#redirectToPubli").submit(
             function(event) {
                 event.preventDefault();
                 $.ajax({
                     type : "GET",
-                    url : "/p/link",
-                    data : $(this).serialize(),
+                    url : $("#urlShort").val() + "+",
                     success : function(msg) {
                         $("#publi").html(
-                            "<div class='alert alert-success lead'><a target='_blank' href='"
-                            + msg.uri
-                            + "'>"
-                            + msg.uri
-                            + "</a></div>");
+                        		"<div id="+"number"+"></div>"
+                        );
                     },
                     error : function() {
-                        $("#result").html(
+                        $("#resultPubli").html(
                                 "<div class='alert alert-danger lead'>ERROR</div>");
                     }
                 });
