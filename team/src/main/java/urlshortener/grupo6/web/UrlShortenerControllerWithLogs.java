@@ -26,7 +26,6 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 	@RequestMapping(value = "/{id:(?!link|index).*}", method = RequestMethod.GET)
 	public ResponseEntity<?> redirectTo(@PathVariable String id, HttpServletRequest request) {
 		logger.info("Requested redirection with hash " + id);
-		logger.info("primer chuflete");
 		return super.redirectTo(id, request);
 	}
 
