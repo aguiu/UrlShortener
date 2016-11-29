@@ -97,9 +97,6 @@ public class UrlShortenerController {
 		LOG.info("sponsor: " + sponsor);
 		if (urlValidator.isValid(url)) {
 			if(isOnline(url)){
-				if(sponsor!=null){
-					sponsor = UUID.randomUUID().toString();
-				}
 				ShortURL su = createAndSaveIfValid(url, sponsor, 
 						UUID.randomUUID().toString(), extractIP(request));
 				if (su != null) {
