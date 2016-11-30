@@ -73,5 +73,5 @@ public class ShortURL {
 	public String getCountry() {
 		return country;
 	}
-
+	
 }
