@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.UUID;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import urlshortener.common.domain.ShortURL;
@@ -49,7 +50,9 @@ public class UrlShortenerController {
 	public ResponseEntity<?> redirectTo(@PathVariable String id,
 			HttpServletRequest request) {
 		ShortURL l = shortURLRepository.findByKey(id);
+		LOG.info("Entrado en redirectTo");
 		if (l != null) {
+			
 			createAndSaveClick(id, extractIP(request));
 			return createSuccessfulRedirectToResponse(l);
 		} else {
@@ -72,23 +75,30 @@ public class UrlShortenerController {
 		HttpHeaders h = new HttpHeaders();
 		if(l.getSponsor()!=null){
 			// TODO: Gestionar que ocurre si este enlace debe llevar publicidad
-			LOG.info("Enlace con publicidad: redireccionando a anuncio...");
+			LOG.info("Entrando en createSuccessfulRedirectToResponse");
+			LOG.info("Enlace con publicidad: redireccionando a anuncio... "+l.getTarget());
+			h.setLocation(URI.create("http://localhost:8080/p/"+l.getHash()));
+			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 		}
-		h.setLocation(URI.create(l.getTarget()));
-		return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
+		else {
+			h.setLocation(URI.create(l.getTarget()));
+			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
+		}
+		
 	}
 
 	@RequestMapping(value = "/link", method = RequestMethod.POST)
 	public ResponseEntity<ShortURL> shortener(@RequestParam("url") String url,
 											  @RequestParam(value = "sponsor", required = false) String sponsor,
 											  HttpServletRequest request) {
+		LOG.info("Entrando en shortener");
 		UrlValidator urlValidator = new UrlValidator(new String[] { "http",
 		"https" });
 		LOG.info("sponsor: " + sponsor);
 		if (urlValidator.isValid(url)) {
 			if(isOnline(url)){
-				ShortURL su = createAndSaveIfValid(url, sponsor, UUID
-						.randomUUID().toString(), extractIP(request));
+				ShortURL su = createAndSaveIfValid(url, sponsor, 
+						UUID.randomUUID().toString(), extractIP(request));
 				if (su != null) {
 					HttpHeaders h = new HttpHeaders();
 					h.setLocation(su.getUri());
@@ -108,6 +118,7 @@ public class UrlShortenerController {
 
 	private ShortURL createAndSaveIfValid(String url, String sponsor,
 										  String owner, String ip) {
+			LOG.info("Entrando en createAndSaveIfValid");
 			String id = Hashing.murmur3_32()
 					.hashString(url, StandardCharsets.UTF_8).toString();
 			ShortURL su = new ShortURL(id, url,
@@ -124,6 +135,7 @@ public class UrlShortenerController {
 	 */
 	private boolean isOnline(String url){
 		try{
+			LOG.info("Entrando en isOnline");
 			HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
 			c.setRequestMethod("HEAD");
 			return c.getResponseCode() == 200;
@@ -134,6 +146,7 @@ public class UrlShortenerController {
 
 	@RequestMapping(value = "/{id}+", method = RequestMethod.GET)
 	public ResponseEntity<Statistic> showStatistic(String id, HttpServletRequest request) {
+		LOG.info("Entrando showStatistics");
 		ShortURL su = shortURLRepository.findByKey(id);
 		Long numberOfRedirect = (long) 0;
 		if (su != null) {
@@ -157,4 +170,20 @@ public class UrlShortenerController {
 			//return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
+	
+	/**@RequestMapping(value = "/p/{id:(?!publi).*}", method = RequestMethod.GET)
+	public ResponseEntity<?> redirectToPubli(@PathVariable String id,
+			HttpServletRequest request) {
+		LOG.info("entrado en redirectToPubli ");
+		ShortURL l = shortURLRepository.findByKey(id);
+		HttpHeaders h = new HttpHeaders();
+		return new ResponseEntity<>(l ,h, HttpStatus.OK);
+	}**/
+	public String redirectToPubli(@PathVariable String id,
+			HttpServletRequest request) {
+		LOG.info("entrado en redirectToPubli ");
+		ShortURL l = shortURLRepository.findByKey(id);
+		return "/publi.html";
+	}
+
 }
