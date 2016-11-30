@@ -73,17 +73,24 @@ public class UrlShortenerController {
 
 	private ResponseEntity<?> createSuccessfulRedirectToResponse(ShortURL l) {
 		HttpHeaders h = new HttpHeaders();
-		if(l.getSponsor()!=null){
+		if (l != null){
+			if(l.getSponsor()!=null){
 			// TODO: Gestionar que ocurre si este enlace debe llevar publicidad
 			LOG.info("Entrando en createSuccessfulRedirectToResponse");
 			LOG.info("Enlace con publicidad: redireccionando a anuncio... "+l.getTarget());
 			h.setLocation(URI.create("http://localhost:8080/p/"+l.getHash()));
 			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
+			}
+			else {
+				h.setLocation(URI.create(l.getTarget()));
+				return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
+			}
 		}
-		else {
-			h.setLocation(URI.create(l.getTarget()));
-			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
+		else{
+			LOG.error("url no valida");
+			return new ResponseEntity <> (HttpStatus.BAD_REQUEST);
 		}
+		
 		
 	}
 
