@@ -43,12 +43,4 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 		logger.info("Requested statistic for uri with id " + id);
 		return super.showStatistic(id,request);
 	}
-	
-	@Override
-	@RequestMapping(value = "/p/{id:(?!link|publi).*}", method = RequestMethod.GET)
-	public String redirectToPubli(@PathVariable String id, HttpServletRequest request) {
-		logger.info("Requested redirection  to Publi " + id);
-		return super.redirectToPubli(id, request);
-	}
-	
 }
