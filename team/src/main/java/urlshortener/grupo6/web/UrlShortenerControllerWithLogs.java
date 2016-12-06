@@ -8,10 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.io.IOException;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Response;
 
 import urlshortener.common.domain.ShortURL;
 import urlshortener.common.domain.Statistic;
@@ -49,6 +54,13 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 	public String redirectToPubli(@PathVariable String id, HttpServletRequest request) {
 		logger.info("Requested redirection  to Publi " + id);
 		return super.redirectToPubli(id, request);
+	}
+
+	@Override
+	@RequestMapping(value = "/uploadUrl", method = RequestMethod.POST)
+	public ResponseEntity<?> uploadUrl(MultipartHttpServletRequest request) {
+		logger.info("Requested uploadUrl");
+		return super.uploadUrl(request);
 	}
 	
 }

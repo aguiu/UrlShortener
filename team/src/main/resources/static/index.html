@@ -11,6 +11,11 @@
     <script type="text/javascript" src="js/statistic.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="jquery.uploadify.min.js" type="text/javascript"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="js/fileinput.js" type="text/javascript"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js" type="text/javascript"></script>
     <title>URL Shortener</title>
   </head><body>
     <div class="navbar navbar-default navbar-static-top">
@@ -90,4 +95,36 @@
         </div>
       </div>
     </div>
+    <div class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <p class="lead text-center">File .CSV Upload</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <form enctype="multipart/form-data">
+              <input id="file-0a" class="file" type="file" multiple data-min-file-count="1">
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-lg-12 text-center">
+            <div class="col-sm-offset-4 col-sm-4 text-center">
+              <br>
+              <div id="resultCSV"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+</body>
+<script>
+$("#file-0a").fileinput({
+        uploadUrl : '/uploadUrl',
+        allowedFileExtensions : ['csv'],
+        maxFilesNum: 2,
+      });
+</script>
 </body></html>
