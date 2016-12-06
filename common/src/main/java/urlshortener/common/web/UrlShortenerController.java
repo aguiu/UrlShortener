@@ -1,8 +1,10 @@
 package urlshortener.common.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.Hashing;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.awt.List;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
@@ -22,16 +31,22 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
-
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Response;
 
 import urlshortener.common.domain.ShortURL;
 import urlshortener.common.repository.ClickRepository;
 import urlshortener.common.repository.ShortURLRepository;
 import urlshortener.common.domain.Click;
 import urlshortener.common.domain.Statistic;
+
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -191,6 +206,88 @@ public class UrlShortenerController {
 		LOG.info("entrado en redirectToPubli ");
 		ShortURL l = shortURLRepository.findByKey(id);
 		return "/publi.html";
+	}
+
+	@RequestMapping(value = "/uploadUrl", method = RequestMethod.POST)
+    public ResponseEntity<?> uploadUrl(MultipartHttpServletRequest request) { 
+		String respuesta = "";
+        Iterator<String> itrator = request.getFileNames();
+        MultipartFile multiFile = request.getFile(itrator.next());
+        if(multiFile != null) {
+	        try {
+	            // just to show that we have actually received the file
+	            System.out.println("File Length:" + multiFile.getBytes().length);
+	            System.out.println("File Type:" + multiFile.getContentType());
+	            String fileName=multiFile.getOriginalFilename();
+	            System.out.println("File Name:" +fileName);
+	
+	            //making directories for our required path.
+	            File destFile = new File(fileName);
+	            byte[] bytes = multiFile.getBytes();
+	            BufferedOutputStream stream = new BufferedOutputStream(
+	                    new FileOutputStream(destFile));
+	            stream.write(bytes);
+	            stream.close();
+	            respuesta = acortarURIs(fileName,request);
+	        } catch (Exception e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+	        }
+        } else {
+        	LOG.info("NO ENCONTRADO");
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(toJson(respuesta), HttpStatus.CREATED);
+    }
+	
+	private String toJson(Object data) {
+        ObjectMapper mapper=new ObjectMapper();
+        StringBuilder builder=new StringBuilder();
+        try {
+            builder.append(mapper.writeValueAsString(data));
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return builder.toString();
+    }
+	
+	private String acortarURIs(String fileName, 
+			MultipartHttpServletRequest request) throws IOException {
+		String cadena, respuesta = "";
+	    FileReader f = new FileReader(fileName);
+	    BufferedReader b = new BufferedReader(f);
+	    cadena = b.readLine();
+	    if(sonValidas(fileName)) {
+	    	 while (cadena != null) {
+	 	    	ResponseEntity<ShortURL> re = shortener(cadena,"sponsor",request);
+	 	    	respuesta = respuesta + ";" + re;
+	 	    	cadena = b.readLine();
+	 	    }
+	    }
+	    b.close();
+	    System.out.println(respuesta);
+		return respuesta;
+	}
+	
+	/**
+	 * Comprueba que todas las URIs que se han pasado en el fichero
+	 * CSV sean válidas. Devuelve false en caso contrario.
+	 */
+	private boolean sonValidas(String fileName) throws IOException {
+		String cadena;
+	    FileReader f = new FileReader(fileName);
+	    BufferedReader b = new BufferedReader(f);
+	    cadena = b.readLine();
+		while (cadena != null) {
+	    	if(!isOnline(cadena)) {
+	    		b.close();
+	    		return false;
+	    	}
+	    	cadena = b.readLine();
+	    }
+		b.close();
+		return true;
 	}
 
 }
