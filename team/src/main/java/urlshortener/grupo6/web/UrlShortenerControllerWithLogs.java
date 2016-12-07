@@ -24,6 +24,8 @@ import urlshortener.common.web.UrlShortenerController;
 import urlshortener.grupo6.security.SignupForm;
 import urlshortener.grupo6.security.UserDetailsImpl;
 import urlshortener.grupo6.security.UserService;
+import org.springframework.web.servlet.ModelAndView;
+
 
 @RestController
 public class UrlShortenerControllerWithLogs extends UrlShortenerController {
@@ -55,13 +57,6 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 	public ResponseEntity<Statistic> showStatistic(@PathVariable String id, HttpServletRequest request) {
 		logger.info("Requested statistic for uri with id " + id);
 		return super.showStatistic(id,request);
-	}
-	
-	@Override
-	@RequestMapping(value = "/p/{id:(?!link|publi).*}", method = RequestMethod.GET)
-	public String redirectToPubli(@PathVariable String id, HttpServletRequest request) {
-		logger.info("Requested redirection  to Publi " + id);
-		return super.redirectToPubli(id, request);
 	}
 
 	@Override
