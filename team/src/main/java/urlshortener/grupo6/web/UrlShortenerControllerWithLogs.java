@@ -2,28 +2,36 @@ package urlshortener.grupo6.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Response;
-
+import javax.validation.Valid;
 import urlshortener.common.domain.ShortURL;
 import urlshortener.common.domain.Statistic;
+import urlshortener.common.domain.User;
+import urlshortener.common.repository.UserRepository;
 import urlshortener.common.web.UrlShortenerController;
+import urlshortener.grupo6.security.SignupForm;
+import urlshortener.grupo6.security.UserDetailsImpl;
+import urlshortener.grupo6.security.UserService;
 
 @RestController
 public class UrlShortenerControllerWithLogs extends UrlShortenerController {
+	
+	@Autowired
+	protected UserRepository userRepository;	
+	@Autowired
+	private UserService userService;
 
 	private static final Logger logger = LoggerFactory.getLogger(UrlShortenerControllerWithLogs.class);
 
@@ -49,7 +57,7 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 		return super.showStatistic(id,request);
 	}
 	
-		@Override
+	@Override
 	@RequestMapping(value = "/p/{id:(?!link|publi).*}", method = RequestMethod.GET)
 	public String redirectToPubli(@PathVariable String id, HttpServletRequest request) {
 		logger.info("Requested redirection  to Publi " + id);
@@ -63,4 +71,26 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 		return super.uploadUrl(request);
 	}
 	
+	@RequestMapping(value = "/signup", method = RequestMethod.POST)
+	public String signup(@ModelAttribute("signupForm") @Valid SignupForm signupForm, BindingResult result){
+		logger.info("Registrando usuario...");
+		if (result.hasErrors()){
+			return "signup";
+		}
+		userService.signup(signupForm);
+		return "redirect:/";
+	}
+	
+	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
+	public User viewUser(@PathVariable String username, HttpServletResponse response){
+		userService.signup(new SignupForm("nombre", "miPass", "miemail@gmail.com"));
+		logger.info("Solicitando datos del usuario: " + username);
+		UserDetailsImpl userDet = userService.loadUserByUsername(username);
+		if (userDet == null) {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		}
+		User user = new User(userDet.getUsername(),userDet.getPassword(), userDet.getEmail());
+		logger.info("Usuario consultado: " + user.getUsername() + " -- " + user.getEmail());
+		return user;	
+	}
 }

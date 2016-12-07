@@ -22,7 +22,6 @@ import org.springframework.stereotype.Repository;
 
 import urlshortener.common.domain.Click;
 
-
 @Repository
 public class ClickRepositoryImpl implements ClickRepository {
 
@@ -162,5 +161,4 @@ public class ClickRepositoryImpl implements ClickRepository {
 		}
 		return -1L;
 	}
-
 }
