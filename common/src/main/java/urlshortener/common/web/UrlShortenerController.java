@@ -86,7 +86,7 @@ public class UrlShortenerController {
 			// TODO: Gestionar que ocurre si este enlace debe llevar publicidad
 			LOG.info("Entrando en createSuccessfulRedirectToResponse");
 			LOG.info("Enlace con publicidad: redireccionando a anuncio... "+l.getTarget());
-			h.setLocation(URI.create("http://localhost:8080/p/"+l.getHash()));
+			h.setLocation(URI.create("http://localhost:8080/advert/"+l.getHash()));
 			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 			}
 			else {
@@ -194,12 +194,12 @@ public class UrlShortenerController {
 		HttpHeaders h = new HttpHeaders();
 		return new ResponseEntity<>(l ,h, HttpStatus.OK);
 	}**/
-	public String redirectToPubli(@PathVariable String id,
+	/**public String redirectToPubli(@PathVariable String id,
 			HttpServletRequest request) {
 		LOG.info("entrado en redirectToPubli ");
 		ShortURL l = shortURLRepository.findByKey(id);
 		return "/publi.html";
-	}
+	}**/
 
 	@RequestMapping(value = "/uploadUrl", method = RequestMethod.POST)
     public ResponseEntity<?> uploadUrl(MultipartHttpServletRequest request) { 
