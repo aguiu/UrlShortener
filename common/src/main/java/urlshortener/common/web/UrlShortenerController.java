@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.hash.Hashing;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.List;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -32,13 +29,9 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Response;
-
 import urlshortener.common.domain.ShortURL;
 import urlshortener.common.repository.ClickRepository;
 import urlshortener.common.repository.ShortURLRepository;
@@ -289,5 +282,4 @@ public class UrlShortenerController {
 		b.close();
 		return true;
 	}
-
 }

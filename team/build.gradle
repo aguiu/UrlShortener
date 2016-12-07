@@ -18,13 +18,15 @@ eclipse {
 
 dependencies {
     compile project(':common')
+    compile("org.thymeleaf:thymeleaf-spring4")
 
     // Provides the production database
     runtime 'org.hsqldb:hsqldb'
 
     // Provides java script libraries for static content
     compile 'org.webjars:bootstrap:3.3.5'
-    compile 'org.webjars:jquery:2.1.4'    
+    compile 'org.webjars:jquery:2.1.4'
+	compile 'org.springframework.boot:spring-boot-starter-security'
 
     // Testing framework
     testCompile 'org.springframework.boot:spring-boot-starter-test'
