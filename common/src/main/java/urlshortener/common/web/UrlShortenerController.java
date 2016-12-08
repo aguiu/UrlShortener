@@ -186,21 +186,6 @@ public class UrlShortenerController {
 		}
 	}
 	
-	/**@RequestMapping(value = "/p/{id:(?!publi).*}", method = RequestMethod.GET)
-	public ResponseEntity<?> redirectToPubli(@PathVariable String id,
-			HttpServletRequest request) {
-		LOG.info("entrado en redirectToPubli ");
-		ShortURL l = shortURLRepository.findByKey(id);
-		HttpHeaders h = new HttpHeaders();
-		return new ResponseEntity<>(l ,h, HttpStatus.OK);
-	}**/
-	/**public String redirectToPubli(@PathVariable String id,
-			HttpServletRequest request) {
-		LOG.info("entrado en redirectToPubli ");
-		ShortURL l = shortURLRepository.findByKey(id);
-		return "/publi.html";
-	}**/
-
 	@RequestMapping(value = "/uploadUrl", method = RequestMethod.POST)
     public ResponseEntity<?> uploadUrl(MultipartHttpServletRequest request) { 
 		String respuesta = "";
