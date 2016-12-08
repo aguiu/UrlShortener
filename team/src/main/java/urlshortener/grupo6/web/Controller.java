@@ -50,6 +50,7 @@ public class Controller {
     public ModelAndView greeting(@PathVariable String id, Model model, HttpServletRequest request) {
 		ShortURL su = shortURLRepository.findByKey(id);
         model.addAttribute("name", su.getTarget());
+        model.addAttribute("disable", "true");
         logger.info("advert:   "+su.getTarget());
         return new ModelAndView("advert");
     }
