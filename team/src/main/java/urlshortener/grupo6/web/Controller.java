@@ -47,11 +47,11 @@ public class Controller {
 	}
 	
 	@RequestMapping("/advert/{id}")
-    public ModelAndView greeting(@PathVariable String id, Model model, HttpServletRequest request) {
+    public ModelAndView advert(@PathVariable String id, Model model, HttpServletRequest request) {
 		ShortURL su = shortURLRepository.findByKey(id);
-        model.addAttribute("name", su.getTarget());
-        model.addAttribute("disable", "true");
-        logger.info("advert:   "+su.getTarget());
+		String s = su.getTarget();
+        model.addAttribute("name", s);
+        logger.info("advert:   "+s);
         return new ModelAndView("advert");
     }
 }

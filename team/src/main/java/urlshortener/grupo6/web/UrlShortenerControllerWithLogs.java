@@ -31,7 +31,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 	
 	@Autowired
-	protected UserRepository userRepository;	
+	protected UserRepository userRepository;
+	
 	@Autowired
 	private UserService userService;
 
