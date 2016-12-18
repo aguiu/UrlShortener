@@ -3,6 +3,7 @@ package urlshortener.grupo6.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import urlshortener.common.domain.User;
 import urlshortener.common.repository.UserRepository;
-import urlshortener.common.repository.UserRepositoryImpl;
 
 @Service
 @Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
@@ -34,11 +34,12 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 	}
 	
 	@Override
-	public UserDetailsImpl loadUserByUsername(String username)
+	public UserDetails loadUserByUsername(String username)
 			throws UsernameNotFoundException{
 		User user = userRepository.findByUsername(username);
 		if (user == null)
 			throw new UsernameNotFoundException(username);
+		log.info("Usuario cargado: " + user.getUsername());
 		return new UserDetailsImpl(user);
 	}
 	
@@ -46,8 +47,14 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 	@Transactional(propagation=Propagation.REQUIRED, readOnly=false)
 	public void signup(SignupForm signupForm){
 		User user = new User(signupForm.getUsername(),
-				passwordEncoder.encode(signupForm.getPassword()), signupForm.getEmail());
+				signupForm.getPassword(), signupForm.getEmail());
 		log.info("signup " + user.getEmail());
 		userRepository.register(user);		
+	}
+
+	@Override
+	public boolean isUserExist(SignupForm signupForm) {
+		User aux = userRepository.findByUsername(signupForm.getUsername());		
+		return aux!=null;
 	}
 }
