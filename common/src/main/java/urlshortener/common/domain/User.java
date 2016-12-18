@@ -1,6 +1,6 @@
 package urlshortener.common.domain;
 
-public class User {
+public class User{
 	private String username;
 	private String password;
 	private String email;

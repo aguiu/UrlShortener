@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import urlshortener.common.domain.ShortURL;
 import urlshortener.common.repository.ShortURLRepository;
 import urlshortener.common.repository.UserRepository;
+import urlshortener.grupo6.security.SignupForm;
 
 @RestController
 public class Controller {
@@ -36,12 +37,13 @@ public class Controller {
 		return new ModelAndView("index");		
 	}
 	
-	@RequestMapping(value="/register", method = RequestMethod.POST)
-	public ModelAndView register(HttpServletRequest request){
-		return new ModelAndView("register");		
+	@RequestMapping(value="/register", method = RequestMethod.GET)
+	public ModelAndView register(ModelAndView model){
+		model.addObject("signupForm", new SignupForm());
+		return model;
 	}
 	
-	@RequestMapping(value="/login", method = RequestMethod.POST)
+	@RequestMapping(value="/login", method = RequestMethod.GET)
 	public ModelAndView login(HttpServletRequest request){
 		return new ModelAndView("login");		
 	}

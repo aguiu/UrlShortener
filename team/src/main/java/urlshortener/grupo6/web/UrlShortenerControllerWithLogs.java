@@ -65,27 +65,4 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 		logger.info("Requested uploadUrl");
 		return super.uploadUrl(request);
 	}
-	
-	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public String signup(@ModelAttribute("signupForm") @Valid SignupForm signupForm, BindingResult result){
-		logger.info("Registrando usuario...");
-		if (result.hasErrors()){
-			return "signup";
-		}
-		userService.signup(signupForm);
-		return "redirect:/";
-	}
-	
-	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
-	public User viewUser(@PathVariable String username, HttpServletResponse response){
-		userService.signup(new SignupForm("nombre", "miPass", "miemail@gmail.com"));
-		logger.info("Solicitando datos del usuario: " + username);
-		UserDetailsImpl userDet = userService.loadUserByUsername(username);
-		if (userDet == null) {
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-		}
-		User user = new User(userDet.getUsername(),userDet.getPassword(), userDet.getEmail());
-		logger.info("Usuario consultado: " + user.getUsername() + " -- " + user.getEmail());
-		return user;	
-	}
 }

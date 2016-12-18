@@ -41,7 +41,7 @@ public class UserRepositoryImpl implements UserRepository{
 			return jdbc.queryForObject("SELECT * FROM user WHERE username=?",
 					rowMapper, username);
 		} catch (Exception e) {
-			log.info("When select for username " + username, e);
+			log.info("Not found: " + username);
 			return null;
 		}
 	}
@@ -52,10 +52,10 @@ public class UserRepositoryImpl implements UserRepository{
 			jdbc.update("INSERT INTO user VALUES (?,?,?)",
 					user.getUsername(),user.getPassword(),user.getEmail());
 		} catch (DuplicateKeyException e) {
-			log.debug("When insert for username " + user.getUsername(), e);
+			log.debug("Error: When insert for username " + user.getUsername(), e);
 			return user;
 		} catch (Exception e) {
-			log.debug("When insert", e);
+			log.debug("Error: When insert", e);
 			return null;
 		}
 		log.info("DATOS EN USER: " + Long.toString(jdbc.queryForObject("select count(*) from user", Long.class)));
