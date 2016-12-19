@@ -2,6 +2,7 @@
 
 DROP TABLE CLICK IF EXISTS;
 DROP TABLE SHORTURL IF EXISTS;
+DROP TABLE USER IF EXISTS;
 
 -- ShortURL
 
@@ -14,7 +15,9 @@ CREATE TABLE SHORTURL(
 	MODE		INTEGER,					-- Redirect mode
 	SAFE		BOOLEAN,						-- Safe target
 	IP			VARCHAR(20),				-- IP
-	COUNTRY		VARCHAR(50)					-- Country
+	COUNTRY		VARCHAR(50),					-- Country
+	STATUS		VARCHAR(50),
+	LASTSTATUS	TIMESTAMP
 );
 
 -- Click
@@ -27,5 +30,13 @@ CREATE TABLE CLICK(
 	BROWSER		VARCHAR(50),				-- Browser
 	PLATFORM	VARCHAR(50),				-- Platform
 	IP			VARCHAR(20),				-- IP
-	COUNTRY		VARCHAR(50)					-- Country
-)
+	COUNTRY		VARCHAR(50)					-- Country	
+);
+
+-- User
+
+CREATE TABLE USER(
+	USERNAME	VARCHAR(100) PRIMARY KEY,	-- Username
+	PASSWORD	VARCHAR(100),				-- Password
+	EMAIL		VARCHAR(100)				-- Email
+);

@@ -1,5 +1,7 @@
 package urlshortener.grupo6.web;
 
+import java.sql.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +32,7 @@ import urlshortener.grupo6.security.UserDetailsImpl;
 import urlshortener.grupo6.security.UserService;
 import org.springframework.web.servlet.ModelAndView;
 
-
+@EnableScheduling
 @RestController
 public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 	
@@ -50,7 +56,14 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 											  @RequestParam(value = "sponsor", required = false) String sponsor,
 											  HttpServletRequest request) {
 		logger.info("Requested new short for uri " + url);
-		return super.shortener(url, sponsor, request);
+		ResponseEntity<ShortURL> shortener = super.shortener(url, sponsor, request);
+		HttpStatus status = shortener.getStatusCode();
+		if (status.equals(HttpStatus.CREATED)) {
+					logger.info("URI was CREATED");
+					ShortURL su = shortener.getBody();
+					su.setTotalStatus("online", new Date(System.currentTimeMillis()));
+		}
+		return shortener;
 	}
 
 	@Override

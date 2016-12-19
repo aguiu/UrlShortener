@@ -56,4 +56,13 @@ public class Controller {
         logger.info("advert:   "+s);
         return new ModelAndView("advert");
     }
+
+    @RequestMapping("/404error/{id}")
+    public ModelAndView errorOffline(@PathVariable String id, Model model, HttpServletRequest request) {
+    	// Obtenemos ya los datos de la URL para mostrarlos en el HTML
+    	ShortURL su = shortURLRepository.findByKey(id);
+    	model.addAttribute("lastStatus", su.getLastStatus());
+    	model.addAttribute("uri", su.getTarget());
+    	return new ModelAndView("404error");
+    }
 }

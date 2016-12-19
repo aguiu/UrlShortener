@@ -2,6 +2,7 @@ package urlshortener.common.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ShortURLRepositoryImpl implements ShortURLRepository {
 					null, rs.getString("sponsor"), rs.getDate("created"),
 					rs.getString("owner"), rs.getInt("mode"),
 					rs.getBoolean("safe"), rs.getString("ip"),
-					rs.getString("country"));
+					rs.getString("country"), rs.getString("status"), rs.getDate("lastStatus"));
 		}
 	};
 
@@ -58,14 +59,15 @@ public class ShortURLRepositoryImpl implements ShortURLRepository {
 	@Override
 	public ShortURL save(ShortURL su) {
 		try {
-			jdbc.update("INSERT INTO shorturl VALUES (?,?,?,?,?,?,?,?,?)",
+			jdbc.update("INSERT INTO shorturl VALUES (?,?,?,?,?,?,?,?,?,?,?)",
 					su.getHash(), su.getTarget(), su.getSponsor(),
 					su.getCreated(), su.getOwner(), su.getMode(), su.getSafe(),
-					su.getIP(), su.getCountry());
+					su.getIP(), su.getCountry(), su.getStatus(), su.getLastStatus());
 		} catch (DuplicateKeyException e) {
 			log.debug("When insert for key " + su.getHash(), e);
 			return su;
 		} catch (Exception e) {
+			System.out.println(e);
 			log.debug("When insert", e);
 			return null;
 		}
@@ -91,10 +93,11 @@ public class ShortURLRepositoryImpl implements ShortURLRepository {
 	public void update(ShortURL su) {
 		try {
 			jdbc.update(
-					"update shorturl set target=?, sponsor=?, created=?, owner=?, mode=?, safe=?, ip=?, country=? where hash=?",
+					"update shorturl set target=?, sponsor=?, created=?, owner=?, mode=?, safe=?, ip=?, country=?," +
+					" status=?, laststatus=? where hash=?",
 					su.getTarget(), su.getSponsor(), su.getCreated(),
 					su.getOwner(), su.getMode(), su.getSafe(), su.getIP(),
-					su.getCountry(), su.getHash());
+					su.getCountry(), su.getStatus(), su.getLastStatus(), su.getHash());
 		} catch (Exception e) {
 			log.debug("When update for hash " + su.getHash(), e);
 		}
@@ -140,6 +143,38 @@ public class ShortURLRepositoryImpl implements ShortURLRepository {
 		} catch (Exception e) {
 			log.debug("When select for target " + target , e);
 			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	public List<String> allList() {
+		try {
+			return jdbc.queryForList("SELECT TARGET FROM shorturl", String.class);
+		} catch (Exception e) {
+			log.debug("Exception allList()");
+			return null;
+		}
+	}
+
+	@Override
+	public void updateAllOnline(String url) {
+		try {
+			jdbc.update(
+					"update shorturl set status=?, laststatus=? where target=?",
+					"online", new Date(System.currentTimeMillis()), url);
+		} catch (Exception e) {
+			log.debug("Exception updateAllOnline()");
+		}
+	}
+
+	@Override
+	public void updateAllOffline(String url) {
+		try {
+			jdbc.update(
+					"update shorturl set status=?, laststatus=? where target=?",
+					"offline", new Date(System.currentTimeMillis()), url);
+		} catch (Exception e) {
+			log.debug("Exception updateAllOffline()");
 		}
 	}
 }

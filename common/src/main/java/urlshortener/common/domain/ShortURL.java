@@ -15,10 +15,12 @@ public class ShortURL {
 	private Boolean safe;
 	private String ip;
 	private String country;
+	private String status;
+	private Date lastStatus;
 
 	public ShortURL(String hash, String target, URI uri, String sponsor,
 			Date created, String owner, Integer mode, Boolean safe, String ip,
-			String country) {
+			String country, String status, Date lastStatus) {
 		this.hash = hash;
 		this.target = target;
 		this.uri = uri;
@@ -29,6 +31,8 @@ public class ShortURL {
 		this.safe = safe;
 		this.ip = ip;
 		this.country = country;
+		this.status = status;
+		this.lastStatus = lastStatus;
 	}
 
 	public ShortURL() {
@@ -74,4 +78,16 @@ public class ShortURL {
 		return country;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public Date getLastStatus() {
+		return lastStatus;
+	}
+
+	public void setTotalStatus(String status, Date lastStatus) {
+		this.status = status;
+		this.lastStatus = lastStatus;
+	}
 }
