@@ -22,4 +22,9 @@ public interface ShortURLRepository {
 
 	List<ShortURL> list(Long limit, Long offset);
 
+	List<String> allList();
+
+	void updateAllOnline(String url);
+
+	void updateAllOffline(String url);
 }

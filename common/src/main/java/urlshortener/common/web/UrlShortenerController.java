@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -30,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import urlshortener.common.domain.ShortURL;
@@ -59,10 +62,12 @@ public class UrlShortenerController {
 			HttpServletRequest request) {
 		ShortURL l = shortURLRepository.findByKey(id);
 		LOG.info("Entrado en redirectTo");
-		if (l != null) {
-			
+		if (l != null && l.getStatus().equals("online")) {
 			createAndSaveClick(id, extractIP(request));
 			return createSuccessfulRedirectToResponse(l);
+		} else if(l != null && l.getStatus().equals("offline")) {
+			LOG.info("SERVICIO NO DISPONIBLE");
+			return create404RedirectToResponse(l);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -97,9 +102,19 @@ public class UrlShortenerController {
 		else{
 			LOG.error("url no valida");
 			return new ResponseEntity <> (HttpStatus.BAD_REQUEST);
+		}	
+	}
+
+	private ResponseEntity<?> create404RedirectToResponse(ShortURL l) {
+		HttpHeaders h = new HttpHeaders();
+		if (l != null){
+			h.setLocation(URI.create("http://localhost:8080/404error/" + l.getHash()));
+			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 		}
-		
-		
+		else{
+			LOG.error("url no valida");
+			return new ResponseEntity <> (HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@RequestMapping(value = "/link", method = RequestMethod.POST)
@@ -141,7 +156,8 @@ public class UrlShortenerController {
 							methodOn(UrlShortenerController.class).redirectTo(
 									id, null)).toUri(), sponsor, new Date(
 							System.currentTimeMillis()), owner,
-					HttpStatus.TEMPORARY_REDIRECT.value(), true, ip, null);
+					HttpStatus.TEMPORARY_REDIRECT.value(), true, ip, null,
+					"online", new Date(System.currentTimeMillis()));
 			return shortURLRepository.save(su);
 	}
 	
@@ -266,5 +282,31 @@ public class UrlShortenerController {
 	    }
 		b.close();
 		return true;
+	}
+
+	@Async
+	@Scheduled(fixedRate=10000)
+	private void updateStatus() {
+		List<String> allUrl = shortURLRepository.allList();
+		if (allUrl == null) {
+			LOG.info("Lista nula");
+		} else {
+			LOG.info("Tamaño de la lista = " + allUrl.size());
+			for (String url : allUrl) {
+				if(isOnline(url)) {
+					// Actualiza todas las URLs con el nuevo 
+					// tiempo e indicando que esta online
+					shortURLRepository.updateAllOnline(url);
+				} else {
+					// Añadir valor no esta online es la BD
+					// para que redireccione a error 404
+					shortURLRepository.updateAllOffline(url);
+				}
+				LOG.info("ShortURL " + url + 
+					" se ha actualizado con nueva disponibilidad = " 
+					+ isOnline(url));
+			}
+		}
+		LOG.info("FIN updateUriStatus");
 	}
 }
