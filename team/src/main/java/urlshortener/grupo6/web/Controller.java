@@ -48,14 +48,21 @@ public class Controller {
 		return new ModelAndView("login");		
 	}
 	
+	
 	@RequestMapping("/advert/{id}")
     public ModelAndView advert(@PathVariable String id, Model model, HttpServletRequest request) {
-		ShortURL su = shortURLRepository.findByKey(id);
-		String s = su.getTarget();
-        model.addAttribute("name", s);
-        logger.info("advert:   "+s);
+        logger.info("advert:   "+id);
         return new ModelAndView("advert");
     }
+	
+	@RequestMapping("/uri/{id}")
+    public ShortURL targetUri(@PathVariable String id, HttpServletRequest request) {
+		ShortURL su = shortURLRepository.findByKey(id);
+		String s = su.getTarget();
+        logger.info(" geting target uri :   "+s);
+        return su;
+    }
+	
 
     @RequestMapping("/404error/{id}")
     public ModelAndView errorOffline(@PathVariable String id, Model model, HttpServletRequest request) {
