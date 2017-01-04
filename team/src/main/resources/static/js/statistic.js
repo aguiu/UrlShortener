@@ -11,6 +11,7 @@ $(document).ready(
                             "<div class='alert alert-success lead'><a target='_blank'>"
                             + "URL: " + msg.url + "<br>Fecha: " 
                             + msg.created + "<br>Clicks: " + msg.clicks
+                            + "<br>IP del creador: " + msg.ip
                             + "</a></div>");
                     },
                     error : function() {
