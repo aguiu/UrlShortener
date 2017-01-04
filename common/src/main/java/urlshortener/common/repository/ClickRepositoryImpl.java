@@ -161,4 +161,14 @@ public class ClickRepositoryImpl implements ClickRepository {
 		}
 		return -1L;
 	}
+
+	@Override
+	public List<Click> visitantes(String hash) {
+		try {
+			return jdbc.query("SELECT * FROM click where hash = ?", new Object[]{hash}, rowMapper);
+		} catch (Exception e) {
+			log.debug("Fail on visitantes",e);
+			return null;
+		}
+	}
 }

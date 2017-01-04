@@ -33,6 +33,7 @@ import java.sql.Date;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import urlshortener.common.domain.ShortURL;
@@ -40,6 +41,7 @@ import urlshortener.common.repository.ClickRepository;
 import urlshortener.common.repository.ShortURLRepository;
 import urlshortener.common.domain.Click;
 import urlshortener.common.domain.Statistic;
+import urlshortener.common.domain.Par;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -189,10 +191,21 @@ public class UrlShortenerController {
 				e.printStackTrace();
 			}
 			numberOfRedirect = clickRepository.clicksByHash(id);
+			List<Click> visitantes = clickRepository.visitantes(id);
+			List<Par> visitasPorIp = visitasPorIp(visitantes);
+			if (visitasPorIp == null) {
+				LOG.info("LIST VISITANTES ES NULO");
+			} else {
+				for (int i = 0; i<visitasPorIp.size(); i++) {
+					LOG.info("Visitante nº" + i + " es " + visitasPorIp.get(i).getIp() + " con "
+						+ visitasPorIp.get(i).getNumVeces());
+				} 
+			}
 			LOG.info("Numero de veces que se ha utilizado " + id + " = " + numberOfRedirect);
 			LOG.info("Fecha de creación de " + id + " = " + su.getCreated());
 			LOG.info("URL destino de " + id + " = " + su.getTarget());
-			Statistic statistic = new Statistic(su.getTarget(),su.getCreated(),numberOfRedirect);
+			Statistic statistic = new Statistic(su.getTarget(),su.getCreated(),numberOfRedirect,
+				su.getIP(),null);
 			return new ResponseEntity<>(statistic, h, HttpStatus.OK);
 			//return createSuccessfulRedirectToResponse(l);
 		} else {
@@ -308,5 +321,27 @@ public class UrlShortenerController {
 			}
 		}
 		LOG.info("FIN updateUriStatus");
+	}
+
+	private List<Par> visitasPorIp(List<Click> visitas) {
+		List<String> yaComprobados = new ArrayList<String>();
+		List<Par> visitasIp = new ArrayList<Par>();
+		for (int i = 0; i<visitas.size(); i++) {
+			Par par = new Par();
+			int numeroDeVeces = 0;
+			String ip = visitas.get(i).getIp();
+			if (!yaComprobados.contains(ip)) {
+				yaComprobados.add(ip);
+				for (int j = 0; j<visitas.size(); j++) {
+					if (ip.equals(visitas.get(j).getIp())) {
+						numeroDeVeces++;
+					}
+				}
+				par.setIp(ip);
+				par.setNumVeces(numeroDeVeces);
+				visitasIp.add(par);
+			}
+		}
+		return visitasIp;
 	}
 }
