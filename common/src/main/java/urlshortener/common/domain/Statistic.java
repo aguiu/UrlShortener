@@ -2,15 +2,16 @@ package urlshortener.common.domain;
 
 import java.sql.Date;
 import java.util.List;
+import urlshortener.common.domain.Par;
 
 public class Statistic {
 
 	private String url, ip;
 	private Date created;
 	private Long clicks;
-	private List<String> ipVisitantes;
+	private List<Par> ipVisitantes;
 
-	public Statistic(String url, Date created, Long clicks, String ip, List<String> ipVisitantes) {
+	public Statistic(String url, Date created, Long clicks, String ip, List<Par> ipVisitantes) {
 		this.url = url;
 		this.created = created;
 		this.clicks = clicks;
@@ -34,7 +35,7 @@ public class Statistic {
 		return ip;
 	}
 
-	public List<String> getVisitantes() {
+	public List<Par> getVisitantes() {
 		return ipVisitantes;
 	}
 }

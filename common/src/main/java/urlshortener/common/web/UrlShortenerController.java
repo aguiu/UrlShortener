@@ -205,13 +205,25 @@ public class UrlShortenerController {
 			LOG.info("Fecha de creación de " + id + " = " + su.getCreated());
 			LOG.info("URL destino de " + id + " = " + su.getTarget());
 			Statistic statistic = new Statistic(su.getTarget(),su.getCreated(),numberOfRedirect,
-				su.getIP(),null);
+				su.getIP(),visitasPorIp);
 			return new ResponseEntity<>(statistic, h, HttpStatus.OK);
-			//return createSuccessfulRedirectToResponse(l);
 		} else {
 			LOG.info("NO ENCONTRADO");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			//return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@RequestMapping(value = "/{id}+html", method = RequestMethod.GET)
+	public ResponseEntity<String> showStatisticHtml(String id, HttpServletRequest request) {
+		HttpHeaders h = new HttpHeaders();
+		ShortURL l = shortURLRepository.findByKey(id);
+		if (l!=null) {
+			LOG.info("Entramos correctamente a showStatisticHtml");
+			String url = "http://localhost:8080/stats/" + id;
+			LOG.info("Devolvemos " + url);
+			return new ResponseEntity<>(url, h, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
