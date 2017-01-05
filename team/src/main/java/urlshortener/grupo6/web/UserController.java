@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
 import urlshortener.common.domain.User;
 import urlshortener.common.repository.UserRepository;
 import urlshortener.grupo6.security.SignupForm;
@@ -50,25 +52,23 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public ResponseEntity<User> signup(@ModelAttribute("signupForm") @Valid SignupForm signupForm, BindingResult result){
+	public ModelAndView signup(@ModelAttribute("signupForm") @Valid SignupForm signupForm, BindingResult result,
+			HttpServletResponse httpServletResponse, ModelAndView model){
 		logger.info("Registrando usuario...");
 		if (result.hasErrors()){
 			logger.info(signupForm.getUsername() + signupForm.getPassword());
 			logger.info("Bad request: " + result.getFieldError().toString());
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return model;
 		}		
         if (userService.isUserExist(signupForm)) {
             logger.info("A User with name " + signupForm.getUsername() + " already exist");
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+			httpServletResponse.setStatus(HttpServletResponse.SC_CONFLICT);
+			return model;
         }
 		userService.signup(signupForm);
-		HttpHeaders h = new HttpHeaders();
-		try {
-			h.setLocation(new URI("/user/" + signupForm.getUsername()));
-			logger.info("usuario creado: " + signupForm.getUsername());
-			return new ResponseEntity<>(h, HttpStatus.CREATED);
-		} catch (URISyntaxException e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		logger.info("usuario creado: " + signupForm.getUsername());
+		httpServletResponse.setStatus(HttpServletResponse.SC_CREATED);
+		return new ModelAndView("login");
 	}
 }

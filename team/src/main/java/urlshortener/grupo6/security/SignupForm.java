@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 public class SignupForm {
 	@NotNull
-	@Size(min=1, max=100, message="Name length Error")
+	@Size(min=3, max=100, message="Name length Error")
 	private String username;
 	
 	@NotNull

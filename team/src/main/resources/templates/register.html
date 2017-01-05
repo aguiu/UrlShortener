@@ -3,18 +3,38 @@
 	  xmlns:th="http://www.thymeleaf.org">
   <head>
     <title>Sign up</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="webjars/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="webjars/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="css/fileinput.css" media="all" rel="stylesheet" type="text/css"/>   
   </head>
   <body>
-    <h1>Sign up</h1>
-    <form th:action="@{/register}" th:object="${signupForm}" th:method="post">
-      Username
-      <input type="text" th:field="*{username}" class="form-control" /> <br />
-      Password
-      <input type="password" th:field="*{password}" class="form-control" /> <br />
-      Email
-      <input type="email" th:field="*{email}" class="form-control" /> <br />
-      <input type="submit" value="Register" />
-      <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Name error</p>
-    </form>
+  	<div class="col-xs-3">
+	    <p class="lead">Sign up</p>
+	    <form th:action="@{/register}" th:object="${signupForm}" th:method="post">
+	      <div class="form-group">
+		  	<label>Username:</label>
+	      	<input type="text" th:field="*{username}" class="form-control" /> <br/>
+	      </div>
+	      <div class="form-group">
+		  	<label>Password:</label>
+	      	<input type="password" th:field="*{password}" class="form-control" /> <br/>
+	      </div>
+	      <div class="form-group">
+		  	<label>Email:</label>
+	      	<input type="email" th:field="*{email}" class="form-control" /> <br/>
+	      </div>
+	      <input type="submit" class="btn btn-primary" value="Register" /> <br/>
+	      <p class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Name error</p>
+	      <p class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</p>
+	      <p class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">email error</p>
+	    </form>
+	</div>
   </body>
 </html>
