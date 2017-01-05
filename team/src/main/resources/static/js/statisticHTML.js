@@ -1,18 +1,15 @@
 $(document).ready(
     function() {
-        $("#showStatistic").submit(
+        $("#showStatisticHTML").submit(
             function(event) {
                 event.preventDefault();
                 $.ajax({
                     type : "GET",
-                    url : $("#urlShort").val() + "+",
+                    url : $("#urlShortHtml").val() + "+html",
                     success : function(msg) {
                         $("#resultStatistic").html(
                             "<div class='alert alert-success lead'><a target='_blank'>"
-                            + "URL: " + msg.url + "<br>Fecha: " 
-                            + msg.created + "<br>Clicks: " + msg.clicks
-                            + "<br>IP del creador: " + msg.ip
-                            + "</a></div>");
+                            + msg +"</a></div>");
                     },
                     error : function() {
                         $("#resultStatistic").html(

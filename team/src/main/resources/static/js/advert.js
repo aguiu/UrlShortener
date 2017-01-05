@@ -6,7 +6,7 @@ function cuenta() {
 		    var array = url.split('/');
 		    var id = array[array.length - 1];
 		    $.getJSON("http://localhost:8080/uri/"+id, function(data){
-		    	window.location= (data.target);   
+		    	window.location = (data.target);   
 		    });
 		        clearInterval(interval);
 		 }else{              

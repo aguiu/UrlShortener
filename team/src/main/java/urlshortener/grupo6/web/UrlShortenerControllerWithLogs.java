@@ -74,6 +74,13 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 	}
 
 	@Override
+	@RequestMapping(value = "/{id}+html", method = RequestMethod.GET)
+	public ResponseEntity<String> showStatisticHtml(@PathVariable String id, HttpServletRequest request) {
+		logger.info("Requested statistic for uri with id " + id);
+		return super.showStatisticHtml(id,request);
+	}
+
+	@Override
 	@RequestMapping(value = "/uploadUrl", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadUrl(MultipartHttpServletRequest request) {
 		logger.info("Requested uploadUrl");
