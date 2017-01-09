@@ -9,7 +9,6 @@ allprojects {
 
 // Instructions for each sub project
 subprojects {
-   apply plugin: 'java'
 
    sourceCompatibility = 1.8
    targetCompatibility = 1.8

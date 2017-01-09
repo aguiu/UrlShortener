@@ -11,7 +11,7 @@ apply plugin: "spring-boot"
 apply plugin: 'eclipse-wtp'
 
 jar {
-    baseName = 'ingweb'
+    baseName = 'UrlShortener'
 }
 
 eclipse {
