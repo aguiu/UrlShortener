@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-	  xmlns:th="http://www.thymeleaf.org">
+	  xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -33,25 +33,38 @@
           </button>
           <a class="navbar-brand" href="#"><span>URLShortener</span></a>
         </div>
-        <div class="collapse navbar-collapse" id="navbar-ex-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li class="active">
-              <a href="#">Home</a>
-            </li>
-            <li>
-              <a href="/login">Login</a>
-            </li>
-            <li>
-              <a href="/register">Sign up</a>
-            </li>
-          </ul>
+        <div th:if="${#httpServletRequest.remoteUser} != null">
+	        <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+	          <ul class="nav navbar-nav navbar-right">
+	            <li class="active">
+	              <a href="#">Home</a>
+	            </li>
+	            <li>
+	              <a href="#" th:inline="text"><b>[[${#httpServletRequest.remoteUser}]]</b> </a>
+	            </li>
+	            <li>
+	            	<a th:href="@{/logout}">Logout</a>
+	            </li>
+	          </ul>
+	        </div>
+        </div>
+          <div th:if="${#httpServletRequest.remoteUser} == null">
+	        <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+	          <ul class="nav navbar-nav navbar-right">
+	            <li class="active">
+	              <a href="#">Home</a>
+	            </li>
+	            <li>
+	              <a href="/login">Login</a>
+	            </li>
+	            <li>
+	            	<a href="/register">Sign up</a>
+	            </li>
+	          </ul>
+	        </div>
         </div>
       </div>
     </div>
-    Logged in user: <b th:inline="text"> [[${#httpServletRequest.remoteUser}]] </b>
-    <form th:action="@{/logout}" method="POST">
-         <input type="submit" value="Logout"/>
-    </form>
     <div class="container-full">
       <div class="row">
         <div class="col-lg-12 text-center">

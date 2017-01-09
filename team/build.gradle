@@ -28,6 +28,7 @@ dependencies {
     compile 'org.webjars:jquery:2.1.4'
 	compile 'org.springframework.boot:spring-boot-starter-security'
 	compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity4', version: '2.1.2.RELEASE'
 
     // Testing framework
     testCompile 'org.springframework.boot:spring-boot-starter-test'

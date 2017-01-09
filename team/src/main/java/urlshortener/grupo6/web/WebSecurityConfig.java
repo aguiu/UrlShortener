@@ -1,7 +1,5 @@
-package urlshortener.grupo6.security;
+package urlshortener.grupo6.web;
 
-
-import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import urlshortener.common.repository.UserRepository;
+import urlshortener.common.security.CustomBasicAuthenticationEntryPoint;
+import urlshortener.common.security.UserServiceImpl;
 
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 

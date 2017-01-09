@@ -1,4 +1,4 @@
-package urlshortener.grupo6.security;
+package urlshortener.common.security;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

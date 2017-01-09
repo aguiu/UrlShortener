@@ -1,4 +1,4 @@
-package urlshortener.grupo6.security;
+package urlshortener.common.security;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;

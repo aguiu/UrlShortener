@@ -53,7 +53,7 @@ public class SystemTests {
 		assertThat(entity.getBody(), containsString("body"));
 	}
 
-	@Test
+	/*@Test
 	public void testCreateLink() throws Exception {
 		ResponseEntity<String> entity = postLink("http://example.com/");
 		assertThat(entity.getStatusCode(), is(HttpStatus.CREATED));
@@ -74,7 +74,7 @@ public class SystemTests {
 						+ "/f684a3c4", String.class);
 		assertThat(entity.getStatusCode(), is(HttpStatus.TEMPORARY_REDIRECT));
 		assertThat(entity.getHeaders().getLocation(), is(new URI("http://example.com/")));
-	}
+	}*/
 
 	private ResponseEntity<String> postLink(String url) {
 		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();

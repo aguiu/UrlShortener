@@ -1,4 +1,4 @@
-package urlshortener.grupo6.security;
+package urlshortener.common.security;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -1,4 +1,4 @@
-package urlshortener.grupo6.security;
+package urlshortener.common.security;
 
 import java.io.IOException;
 import java.io.PrintWriter;

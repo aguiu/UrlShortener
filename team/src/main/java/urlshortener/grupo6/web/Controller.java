@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import urlshortener.common.domain.ShortURL;
 import urlshortener.common.repository.ShortURLRepository;
 import urlshortener.common.repository.UserRepository;
-import urlshortener.grupo6.security.SignupForm;
+import urlshortener.common.security.SignupForm;
 import urlshortener.common.domain.Statistic;
 
 import urlshortener.common.repository.ClickRepository;
@@ -90,7 +92,9 @@ public class Controller {
 		ShortURL su = shortURLRepository.findByKey(id);
 		Long numberOfRedirect = (long) 0;
 		numberOfRedirect = clickRepository.clicksByHash(id);
-		if (su != null) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String name = auth.getName();
+		if (su != null && name.equals(su.getUsername())) {
 			List<Click> visitantes = clickRepository.visitantes(id);
 			List<Par> visitasPorIp = visitasPorIp(visitantes);
 			Statistic statistic = new Statistic(su.getTarget(),su.getCreated(),numberOfRedirect,
@@ -107,6 +111,11 @@ public class Controller {
 	    	model.addAttribute("ip", statistic.getIp());
 	    	model.addAttribute("uri", statistic.getUrl());
 	    	model.addAttribute("html", tablaVisitas);
+	    } else {
+	    	model.addAttribute("created", "Not permission");
+	    	model.addAttribute("ip", "Not permission");
+	    	model.addAttribute("uri", "Not permission");
+	    	model.addAttribute("html", "Not permission");
 	    }
     	return new ModelAndView("stats");
     }

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -88,13 +90,14 @@ public class UrlShortenerController {
 
 	private ResponseEntity<?> createSuccessfulRedirectToResponse(ShortURL l) {
 		HttpHeaders h = new HttpHeaders();
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String name = auth.getName();
 		if (l != null){
-			if(l.getSponsor()!=null){
-			// TODO: Gestionar que ocurre si este enlace debe llevar publicidad
-			LOG.info("Entrando en createSuccessfulRedirectToResponse");
-			LOG.info("Enlace con publicidad: redireccionando a anuncio... "+l.getTarget());
-			h.setLocation(URI.create("http://localhost:8080/advert/"+l.getHash()));
-			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
+			if(l.getSponsor()!=null && !name.equals(l.getUsername())){
+				LOG.info("Entrando en createSuccessfulRedirectToResponse");
+				LOG.info("Enlace con publicidad: redireccionando a anuncio... "+l.getTarget());
+				h.setLocation(URI.create("http://localhost:8080/advert/"+l.getHash()));
+				return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 			}
 			else {
 				h.setLocation(URI.create(l.getTarget()));
@@ -151,6 +154,9 @@ public class UrlShortenerController {
 	private ShortURL createAndSaveIfValid(String url, String sponsor,
 										  String owner, String ip) {
 			LOG.info("Entrando en createAndSaveIfValid");
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			String name = auth.getName();
+			LOG.info("Usuario identificado: " + name);
 			String id = Hashing.murmur3_32()
 					.hashString(url, StandardCharsets.UTF_8).toString();
 			ShortURL su = new ShortURL(id, url,
@@ -159,7 +165,7 @@ public class UrlShortenerController {
 									id, null)).toUri(), sponsor, new Date(
 							System.currentTimeMillis()), owner,
 					HttpStatus.TEMPORARY_REDIRECT.value(), true, ip, null,
-					"online", new Date(System.currentTimeMillis()));
+					"online", new Date(System.currentTimeMillis()),name);
 			return shortURLRepository.save(su);
 	}
 	
@@ -182,12 +188,13 @@ public class UrlShortenerController {
 		LOG.info("Entrando showStatistics");
 		ShortURL su = shortURLRepository.findByKey(id);
 		Long numberOfRedirect = (long) 0;
-		if (su != null) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String name = auth.getName();
+		if (su != null && name.equals(su.getUsername())) {
 			HttpHeaders h = new HttpHeaders();
 			try {
 				h.setLocation(new URI("http://http://localhost:8080/" + su.getHash()));
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			numberOfRedirect = clickRepository.clicksByHash(id);
@@ -217,7 +224,9 @@ public class UrlShortenerController {
 	public ResponseEntity<String> showStatisticHtml(String id, HttpServletRequest request) {
 		HttpHeaders h = new HttpHeaders();
 		ShortURL l = shortURLRepository.findByKey(id);
-		if (l!=null) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String name = auth.getName();
+		if (l!=null && name.equals(l.getUsername())) {
 			LOG.info("Entramos correctamente a showStatisticHtml");
 			String url = "http://localhost:8080/stats/" + id;
 			LOG.info("Devolvemos " + url);
@@ -249,7 +258,6 @@ public class UrlShortenerController {
 	            stream.close();
 	            respuesta = acortarURIs(fileName,request);
 	        } catch (Exception e) {
-	            // TODO Auto-generated catch block
 	            e.printStackTrace();
 	        }
         } else {
@@ -265,7 +273,6 @@ public class UrlShortenerController {
         try {
             builder.append(mapper.writeValueAsString(data));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return builder.toString();

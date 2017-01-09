@@ -1,19 +1,11 @@
 package urlshortener.grupo6.web;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,9 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import urlshortener.common.domain.User;
 import urlshortener.common.repository.UserRepository;
-import urlshortener.grupo6.security.SignupForm;
-import urlshortener.grupo6.security.UserDetailsImpl;
-import urlshortener.grupo6.security.UserService;
+import urlshortener.common.security.SignupForm;
+import urlshortener.common.security.UserDetailsImpl;
+import urlshortener.common.security.UserService;
 
 @RestController
 public class UserController {
