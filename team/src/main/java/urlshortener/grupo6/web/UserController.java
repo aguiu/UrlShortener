@@ -37,8 +37,8 @@ public class UserController {
 	
 	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
 	public User viewUser(@PathVariable String username, HttpServletRequest request){
-		// Para realizar esta operación, hay que estar en la whitelist, puesto
-		// que devuelve información sensible
+		// Para realizar esta operacion, hay que estar en la whitelist, puesto
+		// que devuelve informacion sensible
 		String ipConfiable = "127.0.0.1";
 		logger.info(ipConfiable + " a " + request.getRemoteAddr());
 		if(request.getRemoteAddr().equals(ipConfiable)){
@@ -71,7 +71,7 @@ public class UserController {
         }
 		userService.signup(signupForm);
 		
-		//Restful entre máquinas: búsqueda del usuario en el servicio para comprobar si existe
+		//Restful entre maquinas: busqueda del usuario en el servicio para comprobar si existe
 		RestTemplate restTemplate = new RestTemplate();
 		String urlRequest = request.getRequestURL().toString().replace
 				(request.getRequestURI(),"/user/" + signupForm.getUsername());
