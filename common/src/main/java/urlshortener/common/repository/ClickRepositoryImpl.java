@@ -34,7 +34,7 @@ public class ClickRepositoryImpl implements ClickRepository {
 			return new Click(rs.getLong("id"), rs.getString("hash"),
 					rs.getDate("created"), rs.getString("referrer"),
 					rs.getString("browser"), rs.getString("platform"),
-					rs.getString("ip"), rs.getString("country"));
+					rs.getString("ip"), rs.getString("country"), rs.getInt("tiempo"));
 		}
 	};
 
@@ -70,7 +70,7 @@ public class ClickRepositoryImpl implements ClickRepository {
 						throws SQLException {
 					PreparedStatement ps = conn
 							.prepareStatement(
-									"INSERT INTO CLICK VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+									"INSERT INTO CLICK VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 									Statement.RETURN_GENERATED_KEYS);
 					ps.setNull(1, Types.BIGINT);
 					ps.setString(2, cl.getHash());
@@ -80,6 +80,7 @@ public class ClickRepositoryImpl implements ClickRepository {
 					ps.setString(6, cl.getPlatform());
 					ps.setString(7, cl.getIp());
 					ps.setString(8, cl.getCountry());
+					ps.setInt(9, cl.getTime());
 					return ps;
 				}
 			}, holder);
@@ -97,13 +98,13 @@ public class ClickRepositoryImpl implements ClickRepository {
 
 	@Override
 	public void update(Click cl) {
-		log.info("ID2: "+cl.getId()+"navegador: "+cl.getBrowser()+" SO: "+cl.getPlatform()+" Date:"+cl.getCreated());
+		log.info("ID2: "+cl.getId()+"navegador: "+cl.getBrowser()+" Time: "+cl.getTime()+" Date:"+cl.getCreated());
 		try {
 			jdbc.update(
-					"update click set hash=?, created=?, referrer=?, browser=?, platform=?, ip=?, country=? where id=?",
+					"update click set hash=?, created=?, referrer=?, browser=?, platform=?, ip=?, country=?, tiempo=? where id=?",
 					cl.getHash(), cl.getCreated(), cl.getReferrer(),
 					cl.getBrowser(), cl.getPlatform(), cl.getIp(),
-					cl.getCountry(), cl.getId());
+					cl.getCountry(), cl.getTime(), cl.getId());
 			
 		} catch (Exception e) {
 			log.info("When update for id " + cl.getId(), e);
