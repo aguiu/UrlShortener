@@ -78,7 +78,9 @@
                 <button class="btn btn-lg btn-primary" type="submit">Short me!</button>
               </span>
             </div>
+            <div th:if="${#httpServletRequest.remoteUser} != null">
 			      <input type="checkbox" name="sponsor" value="url/id de la publicidad"/> Activar publicidad para este enlace
+			</div>
           </form>
           <hr/>
         </div>

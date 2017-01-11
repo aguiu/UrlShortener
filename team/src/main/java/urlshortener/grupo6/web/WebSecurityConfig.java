@@ -30,7 +30,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
         	.authorizeRequests()
-        	.antMatchers("/user/**").hasRole("USER")
         	.and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint());
         http
         	.formLogin()
