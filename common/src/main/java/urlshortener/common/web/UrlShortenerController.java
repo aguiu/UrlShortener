@@ -68,7 +68,14 @@ public class UrlShortenerController {
 		LOG.info("Entrado en redirectTo");
 		if (l != null && l.getStatus().equals("online")) {
 			createAndSaveClick(id, extractIP(request));
-			return createSuccessfulRedirectToResponse(l);
+			if(checkIP(id, request)){
+				l.setSponsor(null);
+				return createSuccessfulRedirectToResponse(l);
+			}
+			else{
+				return createSuccessfulRedirectToResponse(l);
+			}
+			
 		} else if(l != null && l.getStatus().equals("offline")) {
 			LOG.info("SERVICIO NO DISPONIBLE");
 			return create404RedirectToResponse(l);
@@ -78,16 +85,67 @@ public class UrlShortenerController {
 	}
 
 	private void createAndSaveClick(String hash, String ip) {
+		Long time=System.currentTimeMillis();
+		int time1 = (int)(time/1000);
 		Click cl = new Click(null, hash, new Date(System.currentTimeMillis()),
-				null, null, null, ip, null);
+				null, null, null, ip, null, (int)(System.currentTimeMillis()/1000));
 		cl=clickRepository.save(cl);
-		LOG.info(cl!=null?"["+hash+"] saved with id ["+cl.getId()+"]":"["+hash+"] was not saved");
+		LOG.info(cl!=null?"["+hash+"] saved with id ["+cl.getId()+"]"+"tiempo["+cl.getTime()+"]":"["+hash+"] was not saved");
 	}
 
 	private String extractIP(HttpServletRequest request) {
 		return request.getRemoteAddr();
 	}
-
+	private boolean checkIP(String hash, HttpServletRequest request ){
+		List<Click> visitantes = clickRepository.visitantes(hash);
+		String IP = extractIP(request);
+		Long time=System.currentTimeMillis();
+		int time1 = (int)(time/1000);
+		Click click = getClickByIP(IP, visitantes);
+		LOG.info("Click ip : "+ click.getIp());
+		
+		if(click!=null){
+			int time2 = click.getTime();
+			LOG.info("RESTANDO TIME1: "+ time1 +" Y TIME2: "+ time2);
+			int time3 = time1-time2; 		
+			LOG.info("RESTA DE TIEMPO: "+ time3);
+			if(time3<12 && time3 > 0){
+				LOG.info("entro aqui!!!!!");
+				return true;
+			}
+			else if(time==0){
+				return false;
+			}
+			else{
+				click.setTime(time1);
+				Click cl = new Click(click.getId(), click.getHash(), click.getCreated(),
+						click.getReferrer(), click.getBrowser(), click.getPlatform(), click.getIp(), 
+						click.getCountry(), (int)(System.currentTimeMillis()/1000));
+				LOG.info("tiempo modificado : "+ cl.getTime());
+				clickRepository.update(cl);
+				LOG.info("click modificado");
+				return false;
+			}
+		}
+		else{
+			LOG.info("ip no encontrada en tabla" );
+			createAndSaveClick(hash, IP);
+			return false;
+			
+		}
+		
+	}
+	
+	private Click getClickByIP(String IP,List<Click> visitantes){
+		for(Iterator<Click> i = visitantes.iterator(); i.hasNext(); ) {
+		    Click item = i.next();
+		    if(item.getIp().equals(IP)){
+		    	return item;
+		    }
+		}
+		return null;
+	}
+		
 	private ResponseEntity<?> createSuccessfulRedirectToResponse(ShortURL l) {
 		HttpHeaders h = new HttpHeaders();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();

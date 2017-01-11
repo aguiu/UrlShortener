@@ -96,4 +96,7 @@ public class ShortURL {
 		this.status = status;
 		this.lastStatus = lastStatus;
 	}
+	public void setSponsor(String sponsor){
+		this.sponsor = sponsor;
+	}
 }
