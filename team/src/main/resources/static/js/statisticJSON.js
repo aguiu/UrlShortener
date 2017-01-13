@@ -10,9 +10,7 @@ $(document).ready(
                     success : function(msg) {
                         $("#resultStatistic").html(
                             "<div class='alert alert-success lead'><a target='_blank'>"
-                            + "URL: " + msg.url + "<br>Fecha: " 
-                            + msg.created + "<br>Clicks: " + msg.clicks
-                            + "<br>IP del creador: " + msg.ip + "<br>Visitantes: " + msg.ipVisitantes
+                            + msg
                             + "</a></div>");
                     },
                     error : function() {
