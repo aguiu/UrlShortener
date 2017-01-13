@@ -238,8 +238,12 @@ public class UrlShortenerController {
 		}
 	}
 
+	/**
+    * Gestiona la información de una url acortada y devuelve sus estadísticas
+    * en formato JSON
+    */
 	@RequestMapping(value = "/{id}+", method = RequestMethod.GET)
-	public ResponseEntity<Statistic> showStatistic(String id, HttpServletRequest request) {
+	public ResponseEntity<?> showStatistic(String id, HttpServletRequest request) {
 		LOG.info("Entrando showStatistics");
 		ShortURL su = shortURLRepository.findByKey(id);
 		Long numberOfRedirect = (long) 0;
@@ -268,13 +272,17 @@ public class UrlShortenerController {
 			LOG.info("URL destino de " + id + " = " + su.getTarget());
 			Statistic statistic = new Statistic(su.getTarget(),su.getCreated(),numberOfRedirect,
 				su.getIP(),visitasPorIp);
-			return new ResponseEntity<>(statistic, h, HttpStatus.OK);
+			return new ResponseEntity<>(toJson(statistic), h, HttpStatus.OK);
 		} else {
 			LOG.info("NO ENCONTRADO");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
+	/**
+    * Gestiona la información de una url acortada y devuelve sus estadísticas 
+    * en un nuevo html
+    */
 	@RequestMapping(value = "/{id}+html", method = RequestMethod.GET)
 	public ResponseEntity<String> showStatisticHtml(String id, HttpServletRequest request) {
 		HttpHeaders h = new HttpHeaders();
@@ -291,6 +299,9 @@ public class UrlShortenerController {
 		}
 	}
 	
+	/**
+    * Gestiona la subida de un fichero CSV con URLs a acortar
+    */
 	@RequestMapping(value = "/uploadUrl", method = RequestMethod.POST)
     public ResponseEntity<?> uploadUrl(MultipartHttpServletRequest request) { 
 		String respuesta = "";
@@ -322,6 +333,9 @@ public class UrlShortenerController {
         return new ResponseEntity<>(toJson(respuesta), HttpStatus.CREATED);
     }
 	
+	/**
+    * Convierte un objeto a formato JSON	
+    */
 	private String toJson(Object data) {
         ObjectMapper mapper=new ObjectMapper();
         StringBuilder builder=new StringBuilder();
@@ -333,6 +347,9 @@ public class UrlShortenerController {
         return builder.toString();
     }
 	
+	/**
+    * Acorta las URIs del fichero CSV una por una.	
+    */
 	private String acortarURIs(String fileName, 
 			MultipartHttpServletRequest request) throws IOException {
 		String cadena, respuesta = "";
@@ -371,6 +388,11 @@ public class UrlShortenerController {
 		return true;
 	}
 
+	/**
+    * Método que se ejecuta constantemente para comprobar si 
+    * las URLs acortadas siguen estando disponibles. En caso contrario,
+    * las trata como caídas.	
+    */
 	@Async
 	@Scheduled(fixedRate=10000)
 	private void updateStatus() {
@@ -397,6 +419,9 @@ public class UrlShortenerController {
 		LOG.info("FIN updateUriStatus");
 	}
 
+	/**
+    * Obtiene las visitas exactas de cada IP a una url acortada específica
+    */
 	private List<Par> visitasPorIp(List<Click> visitas) {
 		List<String> yaComprobados = new ArrayList<String>();
 		List<Par> visitasIp = new ArrayList<Par>();

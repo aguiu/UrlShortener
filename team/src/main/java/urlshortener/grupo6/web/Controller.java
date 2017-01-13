@@ -75,7 +75,9 @@ public class Controller {
         return su;
     }
 	
-
+    /**
+    * Reedirecciona a la página de error cuando una página no está online	
+    */
     @RequestMapping("/404error/{id}")
     public ModelAndView errorOffline(@PathVariable String id, Model model, HttpServletRequest request) {
     	// Obtenemos ya los datos de la URL para mostrarlos en el HTML
@@ -86,6 +88,9 @@ public class Controller {
     	return new ModelAndView("404error");
     }
 
+    /**
+    * Reedirecciona a la nueva página con las estadísticas de la url acortada	
+    */
     @RequestMapping("/stats/{id}")
     public ModelAndView statsHtml(@PathVariable String id, Model model, HttpServletRequest request) {
     	logger.info("Entramos en la redirección a stats.html");
@@ -120,6 +125,9 @@ public class Controller {
     	return new ModelAndView("stats");
     }
 
+    /**
+    * Obtiene las visitas exactas de cada IP a una url acortada específica
+    */
     private List<Par> visitasPorIp(List<Click> visitas) {
 		List<String> yaComprobados = new ArrayList<String>();
 		List<Par> visitasIp = new ArrayList<Par>();
