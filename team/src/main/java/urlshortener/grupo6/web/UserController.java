@@ -1,8 +1,5 @@
 package urlshortener.grupo6.web;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -36,13 +33,8 @@ public class UserController {
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
-	public User viewUser(@PathVariable String username, HttpServletRequest request){
-		// Para realizar esta operacion, hay que estar en la whitelist, puesto
-		// que devuelve informacion sensible
-		String ipConfiable = "127.0.0.1";
-		logger.info(ipConfiable + " a " + request.getRemoteAddr());
-		if(request.getRemoteAddr().equals(ipConfiable)){
-			logger.info("Solicitando datos del usuario: " + username + " desde " + ipConfiable);
+	public User viewUser(@PathVariable String username){
+			logger.info("Solicitando datos del usuario: " + username);
 			UserDetailsImpl userDet = (UserDetailsImpl) userService.loadUserByUsername(username);
 			if (userDet == null) {
 				logger.info("Usuario " + username + " no encontrado");
@@ -51,7 +43,6 @@ public class UserController {
 			User user = new User(userDet.getUsername(),userDet.getPassword(), userDet.getEmail());
 			logger.info("Usuario consultado: " + user.getUsername() + " -- " + user.getEmail());
 			return user;
-		} return null;
 	}
 	
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
