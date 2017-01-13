@@ -61,7 +61,7 @@ public class UrlShortenerController {
 	@Autowired
 	protected ClickRepository clickRepository;
 
-	@RequestMapping(value = "/{id:(?!link).*}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id:(?!link).*}", method = RequestMethod.GET, headers = "Connection!=Upgrade")
 	public ResponseEntity<?> redirectTo(@PathVariable String id,
 			HttpServletRequest request) {
 		ShortURL l = shortURLRepository.findByKey(id);
@@ -109,12 +109,9 @@ public class UrlShortenerController {
 			LOG.info("RESTANDO TIME1: "+ time1 +" Y TIME2: "+ time2);
 			int time3 = time1-time2; 		
 			LOG.info("RESTA DE TIEMPO: "+ time3);
-			if(time3<12 && time3 > 0){
+			if(time3<120 && time3 > 10){
 				LOG.info("entro aqui!!!!!");
 				return true;
-			}
-			else if(time==0){
-				return false;
 			}
 			else{
 				click.setTime(time1);
