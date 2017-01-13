@@ -61,7 +61,7 @@ public class UrlShortenerControllerWithLogs extends UrlShortenerController {
 
 	@Override
 	@RequestMapping(value = "/{id}+", method = RequestMethod.GET)
-	public ResponseEntity<Statistic> showStatistic(@PathVariable String id, HttpServletRequest request) {
+	public ResponseEntity<?> showStatistic(@PathVariable String id, HttpServletRequest request) {
 		logger.info("Requested statistic for uri with id " + id);
 		return super.showStatistic(id,request);
 	}
