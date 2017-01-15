@@ -60,18 +60,26 @@ public class UrlShortenerController {
 
 	@Autowired
 	protected ClickRepository clickRepository;
-
-	@RequestMapping(value = "/{id:(?!link).*}", method = RequestMethod.GET)
+	
+	/** 
+	 * Método que gestiona las redirecciones a las urls acortadas
+	 * createSuccessfulRedirectToResponse el cual redirige a la url con identificador {id}
+	 */
+	@RequestMapping(value = "/{id:(?!link).*}", method = RequestMethod.GET, headers = "Connection!=Upgrade")
 	public ResponseEntity<?> redirectTo(@PathVariable String id,
 			HttpServletRequest request) {
 		ShortURL l = shortURLRepository.findByKey(id);
 		LOG.info("Entrado en redirectTo");
 		if (l != null && l.getStatus().equals("online")) {
 			createAndSaveClick(id, extractIP(request));
+			//checkIP comprueba si el cliente que pide
+			//la redireccion ha accedido a el mismo link en los ultimos 2 minutos
+			//en ese caso se salta la publicidad
 			if(checkIP(id, request)){
 				l.setSponsor(null);
 				return createSuccessfulRedirectToResponse(l);
 			}
+			//si no ha clicado en los ultimos 2 minutos redirige a la publicidad
 			else{
 				return createSuccessfulRedirectToResponse(l);
 			}
@@ -83,7 +91,10 @@ public class UrlShortenerController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
-
+	
+	/**
+	 * Crea un Objeto de tipo Click
+	 */
 	private void createAndSaveClick(String hash, String ip) {
 		Long time=System.currentTimeMillis();
 		int time1 = (int)(time/1000);
@@ -92,10 +103,18 @@ public class UrlShortenerController {
 		cl=clickRepository.save(cl);
 		LOG.info(cl!=null?"["+hash+"] saved with id ["+cl.getId()+"]"+"tiempo["+cl.getTime()+"]":"["+hash+"] was not saved");
 	}
-
+	
+	/**
+	 * Devuelve la ip del cliente
+	 */
 	private String extractIP(HttpServletRequest request) {
 		return request.getRemoteAddr();
 	}
+	
+	/**
+	 * Comprueba si el cliente que pide la redireccíon, ha pedido otra redireccion al mismo link
+	 * en los ultimos 2 minutos
+	 */
 	private boolean checkIP(String hash, HttpServletRequest request ){
 		List<Click> visitantes = clickRepository.visitantes(hash);
 		String IP = extractIP(request);
@@ -103,19 +122,19 @@ public class UrlShortenerController {
 		int time1 = (int)(time/1000);
 		Click click = getClickByIP(IP, visitantes);
 		LOG.info("Click ip : "+ click.getIp());
-		
+		//si ha pinchado en el link anteriormente
 		if(click!=null){
 			int time2 = click.getTime();
 			LOG.info("RESTANDO TIME1: "+ time1 +" Y TIME2: "+ time2);
 			int time3 = time1-time2; 		
 			LOG.info("RESTA DE TIEMPO: "+ time3);
-			if(time3<12 && time3 > 0){
+			// si la ha pedido devuelve true (tambien comprueba si ha tardado mas de 10 
+			//segundos para no saltarse los 10 segundos de espera
+			if(time3<120 && time3 > 10){
 				LOG.info("entro aqui!!!!!");
 				return true;
 			}
-			else if(time==0){
-				return false;
-			}
+			//Si el ultimo click ha sido hace mas de dos minutos guarda este click como nuevo.
 			else{
 				click.setTime(time1);
 				Click cl = new Click(click.getId(), click.getHash(), click.getCreated(),
@@ -127,6 +146,7 @@ public class UrlShortenerController {
 				return false;
 			}
 		}
+		//si es la primera vez que pincha en el link
 		else{
 			LOG.info("ip no encontrada en tabla" );
 			createAndSaveClick(hash, IP);
@@ -136,6 +156,9 @@ public class UrlShortenerController {
 		
 	}
 	
+	/**
+	 * Dado una IP y una lista de click devuelve el click de la persona con dicha IP.
+	 */
 	private Click getClickByIP(String IP,List<Click> visitantes){
 		for(Iterator<Click> i = visitantes.iterator(); i.hasNext(); ) {
 		    Click item = i.next();
@@ -145,7 +168,10 @@ public class UrlShortenerController {
 		}
 		return null;
 	}
-		
+	
+	/**
+	 * Redirige a la pagina de publicidad si el link la tiene y sino redirige a la página directamente.
+	 */
 	private ResponseEntity<?> createSuccessfulRedirectToResponse(ShortURL l) {
 		HttpHeaders h = new HttpHeaders();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -154,7 +180,7 @@ public class UrlShortenerController {
 			if(l.getSponsor()!=null && !name.equals(l.getUsername())){
 				LOG.info("Entrando en createSuccessfulRedirectToResponse");
 				LOG.info("Enlace con publicidad: redireccionando a anuncio... "+l.getTarget());
-				h.setLocation(URI.create("http://localhost:8080/advert/"+l.getHash()));
+				h.setLocation(URI.create("https://urlshorteneredu.herokuapp.com/advert/"+l.getHash()));
 				return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 			}
 			else {
@@ -167,11 +193,14 @@ public class UrlShortenerController {
 			return new ResponseEntity <> (HttpStatus.BAD_REQUEST);
 		}	
 	}
-
+	
+	/**
+	 * Crea una redireccíon a una página 404 de error
+	 */
 	private ResponseEntity<?> create404RedirectToResponse(ShortURL l) {
 		HttpHeaders h = new HttpHeaders();
 		if (l != null){
-			h.setLocation(URI.create("http://localhost:8080/404error/" + l.getHash()));
+			h.setLocation(URI.create("https://urlshorteneredu.herokuapp.com/404error/" + l.getHash()));
 			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 		}
 		else{
@@ -179,7 +208,10 @@ public class UrlShortenerController {
 			return new ResponseEntity <> (HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	
+	/**
+	 * Método que acorta una URL
+	 */
 	@RequestMapping(value = "/link", method = RequestMethod.POST)
 	public ResponseEntity<ShortURL> shortener(@RequestParam("url") String url,
 											  @RequestParam(value = "sponsor", required = false) String sponsor,
@@ -208,7 +240,9 @@ public class UrlShortenerController {
 			return new ResponseEntity <> (HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	/**
+	 * Guarda un nuevo URL acortado en la base de datos
+	 */
 	private ShortURL createAndSaveIfValid(String url, String sponsor,
 										  String owner, String ip) {
 			LOG.info("Entrando en createAndSaveIfValid");
@@ -255,7 +289,7 @@ public class UrlShortenerController {
 		if (su != null && name.equals(su.getUsername())) {
 			HttpHeaders h = new HttpHeaders();
 			try {
-				h.setLocation(new URI("http://http://localhost:8080/" + su.getHash()));
+				h.setLocation(new URI("https://urlshorteneredu.herokuapp.com/" + su.getHash()));
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -294,7 +328,7 @@ public class UrlShortenerController {
 		String name = auth.getName();
 		if (l!=null && name.equals(l.getUsername())) {
 			LOG.info("Entramos correctamente a showStatisticHtml");
-			String url = "http://localhost:8080/stats/" + id;
+			String url = "https://urlshorteneredu.herokuapp.com/stats/" + id;
 			LOG.info("Devolvemos " + url);
 			return new ResponseEntity<>(url, h, HttpStatus.OK);
 		} else {

@@ -33,6 +33,9 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-security'
 	compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity4', version: '2.1.2.RELEASE'
+	compile 'org.springframework.boot:spring-boot-starter-websocket'
+	compile("org.webjars:sockjs-client:1.0.2")
+    compile("org.webjars:stomp-websocket:2.3.3")
 
     // Testing framework
     testCompile 'org.springframework.boot:spring-boot-starter-test'
