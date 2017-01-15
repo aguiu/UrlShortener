@@ -151,7 +151,7 @@ public class UrlShortenerController {
 			if(l.getSponsor()!=null && !name.equals(l.getUsername())){
 				LOG.info("Entrando en createSuccessfulRedirectToResponse");
 				LOG.info("Enlace con publicidad: redireccionando a anuncio... "+l.getTarget());
-				h.setLocation(URI.create("http://urlshorteneredu.herokuapp.com/advert/"+l.getHash()));
+				h.setLocation(URI.create("https://urlshorteneredu.herokuapp.com/advert/"+l.getHash()));
 				return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 			}
 			else {
