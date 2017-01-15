@@ -43,30 +43,45 @@ public class Controller {
 	@Autowired
 	protected ClickRepository clickRepository;
 	
+	/**
+	 * Endpoint del index
+	 */
 	@RequestMapping(value="/", method = RequestMethod.GET)
 	public ModelAndView index(HttpServletRequest request){
 		logger.info("INICIO");
 		return new ModelAndView("index");		
 	}
 	
+	/**
+	 * Endpoint de la página de registro
+	 */
 	@RequestMapping(value="/register", method = RequestMethod.GET)
 	public ModelAndView register(ModelAndView model){
 		model.addObject("signupForm", new SignupForm());
 		return model;
 	}
 	
+	/**
+	 * Endpoint de la página de Login
+	 */
 	@RequestMapping(value="/login", method = RequestMethod.GET)
 	public ModelAndView login(HttpServletRequest request){
 		return new ModelAndView("login");		
 	}
 	
-	
+	/**
+	 * Endpoint de la página de publicidad
+	 */
 	@RequestMapping("/advert/{id}")
     public ModelAndView advert(@PathVariable String id, Model model, HttpServletRequest request) {
         logger.info("advert:   "+id);
         return new ModelAndView("advert");
     }
 	
+	/**
+	 * Endpoint que devuelve informacíon sobre una Uri
+	 * (es usado en la página de publicidad para redirigir automaticamente tras 10 segundos)
+	 */
 	@RequestMapping("/uri/{id}")
     public ShortURL targetUri(@PathVariable String id, HttpServletRequest request) {
 		ShortURL su = shortURLRepository.findByKey(id);
