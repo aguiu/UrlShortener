@@ -32,6 +32,10 @@ public class UserController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	
+	/**
+	 * Pensado para aplicar restful entre maquinas, y hacer la comprobacion de que
+	 * un usuario existe, y conseguir su informacion de registro
+	 */
 	@RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
 	public User viewUser(@PathVariable String username){
 			logger.info("Solicitando datos del usuario: " + username);
@@ -45,6 +49,10 @@ public class UserController {
 			return user;
 	}
 	
+	/**
+	 * Registra un nuevo usuario en el sistema y comprueba mediante restful entre maquinas
+	 * que el usuario creado existe.
+	 */
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ModelAndView signup(@ModelAttribute("signupForm") @Valid SignupForm signupForm, BindingResult result,
 			HttpServletResponse httpServletResponse, ModelAndView model, HttpServletRequest request){

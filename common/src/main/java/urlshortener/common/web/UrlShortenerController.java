@@ -96,8 +96,6 @@ public class UrlShortenerController {
 	 * Crea un Objeto de tipo Click
 	 */
 	private void createAndSaveClick(String hash, String ip) {
-		Long time=System.currentTimeMillis();
-		int time1 = (int)(time/1000);
 		Click cl = new Click(null, hash, new Date(System.currentTimeMillis()),
 				null, null, null, ip, null, (int)(System.currentTimeMillis()/1000));
 		cl=clickRepository.save(cl);
@@ -152,8 +150,7 @@ public class UrlShortenerController {
 			createAndSaveClick(hash, IP);
 			return false;
 			
-		}
-		
+		}		
 	}
 	
 	/**

@@ -14,9 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import urlshortener.common.domain.ShortURL;
 import urlshortener.common.repository.ShortURLRepository;
 import urlshortener.common.repository.UserRepository;
@@ -53,7 +50,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Endpoint de la p�gina de registro
+	 * Endpoint de la pagina de registro
 	 */
 	@RequestMapping(value="/register", method = RequestMethod.GET)
 	public ModelAndView register(ModelAndView model){
@@ -62,7 +59,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Endpoint de la p�gina de Login
+	 * Endpoint de la pagina de Login
 	 */
 	@RequestMapping(value="/login", method = RequestMethod.GET)
 	public ModelAndView login(HttpServletRequest request){
@@ -70,7 +67,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Endpoint de la p�gina de publicidad
+	 * Endpoint de la pagina de publicidad
 	 */
 	@RequestMapping("/advert/{id}")
     public ModelAndView advert(@PathVariable String id, Model model, HttpServletRequest request) {
@@ -79,8 +76,8 @@ public class Controller {
     }
 	
 	/**
-	 * Endpoint que devuelve informac�on sobre una Uri
-	 * (es usado en la p�gina de publicidad para redirigir automaticamente tras 10 segundos)
+	 * Endpoint que devuelve informacion sobre una URI
+	 * (es usado en la pagina de publicidad para redirigir automaticamente tras 10 segundos)
 	 */
 	@RequestMapping("/uri/{id}")
     public ShortURL targetUri(@PathVariable String id, HttpServletRequest request) {
@@ -91,7 +88,7 @@ public class Controller {
     }
 	
     /**
-    * Reedirecciona a la página de error cuando una página no está online	
+    * Reedirecciona a la pagina de error cuando una pagina no esta online	
     */
     @RequestMapping("/404error/{id}")
     public ModelAndView errorOffline(@PathVariable String id, Model model, HttpServletRequest request) {
@@ -104,7 +101,7 @@ public class Controller {
     }
 
     /**
-    * Reedirecciona a la nueva página con las estadísticas de la url acortada	
+    * Reedirecciona a la nueva pagina con las estadisticas de la url acortada	
     */
     @RequestMapping("/stats/{id}")
     public ModelAndView statsHtml(@PathVariable String id, Model model, HttpServletRequest request) {
@@ -141,7 +138,7 @@ public class Controller {
     }
 
     /**
-    * Obtiene las visitas exactas de cada IP a una url acortada específica
+    * Obtiene las visitas exactas de cada IP a una url acortada especifica
     */
     private List<Par> visitasPorIp(List<Click> visitas) {
 		List<String> yaComprobados = new ArrayList<String>();
@@ -163,6 +160,5 @@ public class Controller {
 			}
 		}
 		return visitasIp;
-	}
-    
+	}    
 }

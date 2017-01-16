@@ -26,6 +26,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private static String REALM = "URLSHORTENER";
 	
+	/**
+	 * Configuracion basica de la seguridad del sistema, y sus elementos
+	 */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
@@ -48,6 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(new UserServiceImpl(userRepository));
+        // datos de usuario de ejemplo para hacer pruebas
         auth.inMemoryAuthentication().withUser("user").password("pass").roles("USER");
     }
     
