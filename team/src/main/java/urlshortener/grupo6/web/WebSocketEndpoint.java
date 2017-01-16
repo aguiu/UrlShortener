@@ -18,7 +18,7 @@ public class WebSocketEndpoint{
     @Autowired
 	protected ShortURLRepository shortURLRepository;
 
-    @MessageMapping("/conected")
+    @MessageMapping("/topic/answer")
     @SendTo("/topic/answer")
     public Integer answeringToWebSocket(){
     	List<String> allUrl = shortURLRepository.allList();

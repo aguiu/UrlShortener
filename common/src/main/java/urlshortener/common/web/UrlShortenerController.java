@@ -177,7 +177,7 @@ public class UrlShortenerController {
 			if(l.getSponsor()!=null && !name.equals(l.getUsername())){
 				LOG.info("Entrando en createSuccessfulRedirectToResponse");
 				LOG.info("Enlace con publicidad: redireccionando a anuncio... "+l.getTarget());
-				h.setLocation(URI.create("https://urlshorteneredu.herokuapp.com/advert/"+l.getHash()));
+				h.setLocation(URI.create("https://urlshortenergrupo6.herokuapp.com/advert/"+l.getHash()));
 				return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 			}
 			else {
@@ -197,7 +197,7 @@ public class UrlShortenerController {
 	private ResponseEntity<?> create404RedirectToResponse(ShortURL l) {
 		HttpHeaders h = new HttpHeaders();
 		if (l != null){
-			h.setLocation(URI.create("https://urlshorteneredu.herokuapp.com/404error/" + l.getHash()));
+			h.setLocation(URI.create("https://urlshortenergrupo6.herokuapp.com/404error/" + l.getHash()));
 			return new ResponseEntity<>(h, HttpStatus.valueOf(l.getMode()));
 		}
 		else{
@@ -286,7 +286,7 @@ public class UrlShortenerController {
 		if (su != null && name.equals(su.getUsername())) {
 			HttpHeaders h = new HttpHeaders();
 			try {
-				h.setLocation(new URI("https://urlshorteneredu.herokuapp.com/" + su.getHash()));
+				h.setLocation(new URI("https://urlshortenergrupo6.herokuapp.com/" + su.getHash()));
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -325,7 +325,7 @@ public class UrlShortenerController {
 		String name = auth.getName();
 		if (l!=null && name.equals(l.getUsername())) {
 			LOG.info("Entramos correctamente a showStatisticHtml");
-			String url = "https://urlshorteneredu.herokuapp.com/stats/" + id;
+			String url = "https://urlshortenergrupo6.herokuapp.com/stats/" + id;
 			LOG.info("Devolvemos " + url);
 			return new ResponseEntity<>(url, h, HttpStatus.OK);
 		} else {
